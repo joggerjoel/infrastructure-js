@@ -280,7 +280,7 @@ data_domains:
 ```typescript
 // Domain: Event Management
 // Owner: Data Team
-// Bounded Context: Event scraping, storage, reconciliation
+// Bounded Context: Event processing, storage, review
 
 namespace EventDomain {
   // Core entities
@@ -288,8 +288,8 @@ namespace EventDomain {
   export interface Venue { }
   
   // Services
-  export class EventScraper { }
-  export class EventReconciler { }
+  export class EventProcessor { }
+  export class EventReviewer { }
   
   // Repositories
   export interface EventRepository { }
@@ -501,7 +501,7 @@ sli_definitions:
     
   freshness:
     description: "Data freshness for processor"
-    measurement: "time_since_last_successful_scrape"
+    measurement: "time_since_last_successful_processing"
     window: "1 hour"
     
   correctness:
