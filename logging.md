@@ -15,13 +15,11 @@ The backend uses [Pino](https://getpino.io/) for structured logging with file ro
 **Related docs**
 
 - **[Structured log attributes and features](#structured-log-attributes-and-features)** — All attributes and features used in log lines (below).
-- [CHROME_LOGGING.md](./CHROME_LOGGING.md) — Viewing logs in Chrome and the web log viewer.
-- [DEBUG_QUERY_TRACKING.md](../../DEBUG_QUERY_TRACKING.md) — Debugging SQL query tracking (requestHash, tracker, expected log sequence).
 
 ## Features
 
 - **File-based logging**: All logs are written to files in `./logs/` directory (relative to project root)
-- **One log file per startup**: Each server restart creates a new log file with format `backend-YYYYMMDD_HHMMSS.log`
+- **One log file per startup**: Each server restart creates a new log file with format `{app_name}-YYYYMMDD_HHMMSS.log`
 - **Same file throughout app lifetime**: The startup log file is used for the entire lifetime of the app instance
 - **Size-based rotation**: Logs rotate when they exceed 20MB, creating numbered versions (`.1.log`, `.2.log`, etc.) while the base file continues to be used
 - **Compression**: Old log files are automatically compressed using gzip (native Node.js, no Python needed)
@@ -37,10 +35,10 @@ logs/
 └── 2026/                                    # Year
     └── 202601/                              # Year-Month
         └── 20260126/                        # Year-Month-Day
-            ├── backend-20260126_211530.log          # Current log file (with startup timestamp, used throughout app lifetime)
-            ├── backend-20260126_211530.1.log        # Rotated log (when size exceeds 20MB)
-            ├── backend-20260126_211530.2.log        # Next rotation
-            └── backend-20260126_211530.1.log.gz     # Compressed old log
+            ├── {app_name}-20260126_211530.log          # Current log file (with startup timestamp, used throughout app lifetime)
+            ├── {app_name}-20260126_211530.1.log        # Rotated log (when size exceeds 20MB)
+            ├── {app_name}-20260126_211530.2.log        # Next rotation
+            └── {app_name}-20260126_211530.1.log.gz     # Compressed old log
 ```
 
 This structure makes it easy to:
@@ -59,7 +57,7 @@ This structure makes it easy to:
 ### Example `.env` configuration:
 
 ```bash
-LOG_DIR=/var/log/reconciliation-api
+LOG_DIR=/var/log/{app_name}
 LOG_LEVEL=info
 NODE_ENV=production
 ```
@@ -76,10 +74,10 @@ You can manually compress old logs using the provided script:
 
 ```bash
 # Compress logs older than 1 day
-tsx backend/scripts/compress-logs.ts
+tsx scripts/compress-logs.ts
 
 # Compress logs older than 7 days
-tsx backend/scripts/compress-logs.ts /path/to/logs 7
+tsx scripts/compress-logs.ts /path/to/logs 7
 ```
 
 ### Cron Job Setup
@@ -89,7 +87,7 @@ To compress logs daily via cron (optional, since compression happens on startup)
 ```bash
 # Add to crontab (crontab -e)
 # Compress logs older than 1 day at 2 AM daily
-0 2 * * * cd /path/to/project && tsx backend/scripts/compress-logs.ts >> /var/log/log-compression.log 2>&1
+0 2 * * * cd /path/to/project && tsx scripts/compress-logs.ts >> /var/log/log-compression.log 2>&1
 ```
 
 ## Log Retention
@@ -103,25 +101,25 @@ To compress logs daily via cron (optional, since compression happens on startup)
 
 ### Current Log (via symlink)
 ```bash
-tail -f logs/backend-current.log
+tail -f logs/{app_name}-current.log
 ```
 
 ### Specific Log File (by date path)
 ```bash
 # Using the date-based path
-tail -f logs/2026/202601/20260126/backend-20260126_211530.log
+tail -f logs/2026/202601/20260126/{app_name}-20260126_211530.log
 
 # Or use the symlink
-tail -f logs/backend-current.log
+tail -f logs/{app_name}-current.log
 ```
 
 ### Compressed Logs
 ```bash
 # View compressed log (using date path)
-zcat logs/2026/202601/20260126/backend-20260126_211530.2026-01-26.1.log.gz | less
+zcat logs/2026/202601/20260126/{app_name}-20260126_211530.2026-01-26.1.log.gz | less
 
 # Or decompress first
-gunzip logs/2026/202601/20260126/backend-20260126_211530.2026-01-26.1.log.gz
+gunzip logs/2026/202601/20260126/{app_name}-20260126_211530.2026-01-26.1.log.gz
 ```
 
 ### Browse by Date
@@ -143,7 +141,7 @@ ls logs/2026/202601/20260126/
 In production, logs are in JSON format. Use `jq` for pretty printing:
 
 ```bash
-tail -f logs/backend-current.log | jq
+tail -f logs/{app_name}-current.log | jq
 ```
 
 ## Log Levels
@@ -188,7 +186,7 @@ Every log line is a JSON object. Attributes come from Pino plus the object passe
 | `nodeEnv`         | string | Logger init | `process.env.NODE_ENV \|\| 'development'` |
 | `compressedCount` | number | Post-startup | Count of log files compressed (when &gt; 0) |
 
-### Request / query-tracking attributes (reconciliation and debugging)
+### Request / query-tracking attributes
 
 | Attribute           | Type    | When | Description |
 |--------------------|---------|------|-------------|
@@ -231,8 +229,8 @@ Every log line is a JSON object. Attributes come from Pino plus the object passe
 
 - **Structured JSON**: Every log line is a JSON object; search and filter by any attribute.
 - **Request correlation**: Use `requestHash` or `X-Request-Id` to tie frontend requests to backend logs and query history.
-- **Query debugging**: Use `trackerQueryCount`, `sqlPreview`, `paramCount`, `duration`, `rowCount` and the sequence of getRecords messages to debug SQL and tracking. See [DEBUG_QUERY_TRACKING.md](../../DEBUG_QUERY_TRACKING.md) for the expected flow.
-- **Viewing logs**: Use the web log viewer, API, or Chrome; see [CHROME_LOGGING.md](./CHROME_LOGGING.md).
+- **Query debugging**: Use `trackerQueryCount`, `sqlPreview`, `paramCount`, `duration`, `rowCount` and the sequence of request messages to debug SQL and tracking.
+- **Viewing logs**: Use the web log viewer, API, or command-line tools.
 
 ## Native JavaScript/Node.js
 
