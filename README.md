@@ -51,6 +51,7 @@ This directory contains comprehensive documentation for the Node.js/TypeScript s
 | **[Environment Management](environment-mode.md)** | Dev, staging, production configurations | 💡 Guidance |
 | **[Graceful Shutdown](graceful-shutdown.md)** | Signal handling, resource cleanup | 💡 Guidance |
 | **[Program Versioning](program-versioning.md)** | Semantic versioning, changelog management | 💡 Guidance |
+| **[Messaging & Search Strategy](messaging-and-search-strategy.md)** | Where to use Elasticsearch, Redis, Kafka, RabbitMQ | 💡 Guidance |
 
 ### 📊 Observability
 | Document | Purpose | Status |
@@ -58,6 +59,7 @@ This directory contains comprehensive documentation for the Node.js/TypeScript s
 | **[Logging](logging.md)** | Structured logging with Pino | ✅ Implemented |
 | **[Prometheus & Grafana](prometheus.md)** | Metrics, dashboards, alerts | 💡 Guidance |
 | **[Distributed Tracing](tracing.md)** | OpenTelemetry, request correlation | 💡 Guidance |
+| **[Elasticsearch](messaging-and-search-strategy.md#elasticsearch---search--log-aggregation)** | Log aggregation and full-text search | 💡 Guidance |
 
 ### 🚀 Development & Deployment
 | Document | Purpose | Status |
