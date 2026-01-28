@@ -84,7 +84,7 @@ markdown# Incident Response Checklist
 
 ## Investigation (Next 15 Minutes)
 - [ ] Check recent deploys: Last deploy was at [TIME]
-- [ ] Review error logs: `tail -f logs/backend-current.log | grep ERROR`
+- [ ] Review error logs: `tail -f logs/{app_name}-current.log | grep ERROR`
 - [ ] Check key metrics: CloudWatch dashboard
 - [ ] Database status: Connection count, slow queries
 - [ ] External dependencies: Are third-party APIs down?
@@ -158,12 +158,12 @@ Tool: OpenAPI/Swagger with auto-generation
 yaml# openapi.yaml (auto-generated from code)
 openapi: 3.0.0
 info:
-  title: Reconciliation API
+  title: {app_name} API
   version: 1.0.0
 paths:
-  /api/reconciliation/records:
+  /api/entities/records:
     get:
-      summary: Get reconciliation records
+      summary: Get entity records
       parameters:
         - name: page
           in: query
@@ -202,7 +202,7 @@ markdown# System Architecture
 - **Jobs**: Bull queue, for async processing
 
 ## Key Decisions
-1. **Why PostgreSQL?**: Need ACID transactions for reconciliation
+1. **Why PostgreSQL?**: Need ACID transactions for data consistency
 2. **Why Node.js?**: Team expertise, fast iteration
 3. **Why Redis?**: Fast session lookups, job queue
 4. **Why not microservices?**: Team size (5 engineers), keep simple
@@ -219,8 +219,8 @@ markdown# Database Schema
 
 ## Core Tables
 
-### `reconciliation_records`
-Primary table for reconciliation data.
+### `entities`
+Primary table for domain entities.
 
 | Column | Type | Constraints | Description |
 |--------|------|-------------|-------------|
@@ -236,9 +236,9 @@ Primary table for reconciliation data.
 - `idx_status_created` on `(status, created_at)` (for filtering)
 
 **Relationships**:
-- One-to-many with `crosswalk_mappings`
+- One-to-many with `mappings`
 
-### `crosswalk_mappings`
+### `mappings`
 Maps external IDs to internal IDs.
 
 [Similar format...]

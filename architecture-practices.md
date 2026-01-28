@@ -124,7 +124,7 @@ docs/
 
 **Status**: Accepted  
 **Date**: 2026-01-15  
-**Deciders**: Backend Team, Data Team  
+**Deciders**: Infrastructure Team, Data Team  
 **Tags**: database, architecture
 
 ## Context
@@ -224,30 +224,30 @@ Clear ownership prevents:
 ```yaml
 services:
   api-server:
-    owner: backend-team
-    primary_contact: "@backend-lead"
+    owner: infrastructure-team
+    primary_contact: "@infrastructure-lead"
     escalation_path:
-      - "@backend-lead"
+      - "@infrastructure-lead"
       - "@engineering-manager"
       - "@cto"
     on_call: true
     runbooks: ["docs/runbooks/api-server/"]
     
-  scraper-service:
+  data-service:
     owner: data-team
     primary_contact: "@data-lead"
     escalation_path:
       - "@data-lead"
-      - "@backend-lead"
+      - "@infrastructure-lead"
     on_call: true
-    runbooks: ["docs/runbooks/scraper/"]
+    runbooks: ["docs/runbooks/data-service/"]
     
-  reconciliation-service:
+  processing-service:
     owner: data-team
     primary_contact: "@data-lead"
     escalation_path:
       - "@data-lead"
-      - "@backend-lead"
+      - "@infrastructure-lead"
     on_call: false  # Batch job, not real-time
 ```
 
@@ -257,20 +257,20 @@ services:
 data_domains:
   events:
     owner: data-team
-    schema: stubhub_events
+    schema: events
     retention: 2_years
     pii: false
     
   users:
-    owner: backend-team
+    owner: infrastructure-team
     schema: users
     retention: indefinite
     pii: true
     gdpr_applies: true
     
-  reconciliation:
+  reviews:
     owner: data-team
-    schema: event_reconciliation_review
+    schema: reviews
     retention: 1_year
     pii: false
 ```
@@ -296,7 +296,7 @@ namespace EventDomain {
 }
 
 // Domain: User Management
-// Owner: Backend Team
+// Owner: Infrastructure Team
 // Bounded Context: Authentication, authorization, user data
 
 namespace UserDomain {
@@ -1030,13 +1030,13 @@ describe('Event API Contract', () => {
 ```yaml
 retention_policies:
   events:
-    table: stubhub_events
+    table: events
     retention: 2_years
     archive_after: 1_year  # Move to cold storage
     delete_after: 2_years
     
-  reconciliation_reviews:
-    table: event_reconciliation_review
+  reviews:
+    table: reviews
     retention: 1_year
     archive_after: 6_months
     delete_after: 1_year
@@ -1458,16 +1458,16 @@ class FeatureFlagService {
 }
 
 // Usage
-const useNewScraper = await featureFlags.isEnabled(
-  'new-scraper-v2',
+const useNewProcessor = await featureFlags.isEnabled(
+  'new-processor-v2',
   userId,
   tenantId
 );
 
-if (useNewScraper) {
-  await newScraper.scrape();
+if (useNewProcessor) {
+  await newProcessor.process();
 } else {
-  await oldScraper.scrape();
+  await oldProcessor.process();
 }
 ```
 
@@ -1909,7 +1909,7 @@ fire_drills:
 ```yaml
 documentation_ownership:
   api-documentation.md:
-    owner: "@backend-team"
+    owner: "@infrastructure-team"
     review_cadence: "monthly"
     last_validated: "2026-01-15"
     
@@ -1966,37 +1966,37 @@ documentation_ownership:
 
 ### Event
 - **Definition**: A ticketed occurrence at a venue (concert, sports game, etc.)
-- **Context**: Used in `stubhub_events` table, API endpoints
+- **Context**: Used in `events` table, API endpoints
 - **Synonyms**: None
 - **Related**: Venue, Ticket, Date
 
 ### Confidence
-- **Definition**: Match confidence score for reconciliation (low, medium, high, very_high)
-- **Context**: `event_reconciliation_review.match_confidence`
+- **Definition**: Match confidence score for entity matching (low, medium, high, very_high)
+- **Context**: `reviews.match_confidence`
 - **Synonyms**: Match Score
 - **Related**: Reconciliation, Match Status
 
 ### Review
-- **Definition**: Human review of reconciliation match
-- **Context**: `event_reconciliation_review.review_status` (pending, approved, rejected, bot)
+- **Definition**: Human review of entity match
+- **Context**: `reviews.review_status` (pending, approved, rejected, bot)
 - **Synonyms**: Manual Review, Human Review
-- **Related**: Reconciliation, Bot Decision
+- **Related**: Entity Matching, Bot Decision
 
 ### Decision
-- **Definition**: Final determination on reconciliation match
-- **Context**: Used in reconciliation workflow
+- **Definition**: Final determination on entity match
+- **Context**: Used in review workflow
 - **Synonyms**: Match Decision, Resolution
 - **Related**: Review, Confidence, Match Status
 
 ### Run
-- **Definition**: A single execution of the scraper across all venues
-- **Context**: `stubhub_venue_run.run_id`
-- **Synonyms**: Scraping Run, Execution
-- **Related**: Venue, Progress, Events
+- **Definition**: A single execution of a batch process across all sources
+- **Context**: `runs.run_id`
+- **Synonyms**: Batch Run, Execution
+- **Related**: Source, Progress, Events
 
 ### Venue
 - **Definition**: A physical location where events occur
-- **Context**: Scraped from StubHub, stored in venues table
+- **Context**: Stored in venues table
 - **Synonyms**: Location, Site
 - **Related**: Event, Run
 ```
@@ -2356,7 +2356,7 @@ performance_budgets:
       "/api/users": "< 150ms p95"
     standard_endpoints:
       "/api/venues": "< 500ms p95"
-      "/api/reconciliation": "< 1000ms p95"
+      "/api/entities": "< 1000ms p95"
       
   bundle_sizes:
     initial_js: "< 200KB gzipped"
@@ -3403,7 +3403,7 @@ mutation_testing:
   paths:
     - "src/services/payment/"
     - "src/services/auth/"
-    - "src/services/reconciliation/"
+    - "src/services/entities/"
     
   threshold: 80%  # Minimum mutation score
   tools:
@@ -3423,7 +3423,7 @@ class SyntheticMonitor {
       this.testUserLogin(),
       this.testEventCreation(),
       this.testPaymentProcessing(),
-      this.testDataReconciliation()
+      this.testDataProcessing()
     ];
     
     const results = await Promise.all(tests);

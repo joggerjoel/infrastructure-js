@@ -128,7 +128,7 @@ curl http://localhost:3000/metrics
 ### View Logs
 ```bash
 # See: logging.md for details
-tail -f logs/backend-current.log
+tail -f logs/{app_name}-current.log
 # Or use log viewer
 npm run logs:view
 ```

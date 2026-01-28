@@ -42,10 +42,10 @@ git log --since="1 hour ago" --oneline
 ### 4. Review Error Logs
 ```bash
 # SSH to server or use log aggregation
-tail -f logs/backend-current.log | grep -i error
+tail -f logs/{app_name}-current.log | grep -i error
 
 # Or filter by endpoint
-tail -f logs/backend-current.log | grep "POST /api/users" | grep -i error
+tail -f logs/{app_name}-current.log | grep "POST /api/users" | grep -i error
 ```
 
 ---
@@ -108,7 +108,7 @@ pm2 restart app
 curl -I https://external-api.com/health
 
 # Check logs for external API errors
-grep "external-api" logs/backend-current.log | grep -i error
+grep "external-api" logs/{app_name}-current.log | grep -i error
 ```
 
 **Solution**:
@@ -138,7 +138,7 @@ breaker.fallback(() => {
 **Check**:
 ```bash
 # Look for validation errors in logs
-grep "validation" logs/backend-current.log | tail -20
+grep "validation" logs/{app_name}-current.log | tail -20
 ```
 
 **Solution**:
@@ -158,7 +158,7 @@ grep "validation" logs/backend-current.log | tail -20
 **Check**:
 ```bash
 # Check rate limit logs
-grep "rate limit" logs/backend-current.log
+grep "rate limit" logs/{app_name}-current.log
 ```
 
 **Solution**:
@@ -183,7 +183,7 @@ rate(http_errors_total[5m]) / rate(http_requests_total[5m]) * 100
 ### 2. Check Logs
 ```bash
 # Should see fewer errors
-tail -f logs/backend-current.log | grep -i error
+tail -f logs/{app_name}-current.log | grep -i error
 ```
 
 ### 3. Test Affected Endpoint

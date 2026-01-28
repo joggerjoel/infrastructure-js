@@ -2,7 +2,7 @@
 
 ---
 **Last Updated**: 2026-01-28  
-**Project**: stubhub-recon-gui  
+**Project**: {app_name}  
 **Maintainer**: Infrastructure Team  
 ---
 

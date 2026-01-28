@@ -673,7 +673,7 @@ kill -SIGINT $(pgrep -f "node.*server")
 # Or just Ctrl+C in the server terminal
 
 # Check logs for cleanup messages
-tail -f logs/backend-current.log | grep -i shutdown
+tail -f logs/{app_name}-current.log | grep -i shutdown
 ```
 
 ### Automated Testing
