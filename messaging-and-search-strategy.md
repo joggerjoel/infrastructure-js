@@ -800,6 +800,59 @@ Choose the best technology based on your application/service characteristics:
 | **Historical real-time data** | ❌ | ✅ Primary | ⚠️ Can stream to ES | ❌ |
 | **Sub-100ms real-time** | ✅ Primary | ❌ | ⚠️ Possible | ❌ |
 
+### Detailed Application/Service Decision Matrix
+
+#### By Performance Requirements
+
+| Requirement | Best Choice | Alternatives | Notes |
+|-------------|-------------|--------------|-------|
+| **Sub-100ms latency** | Redis | - | In-memory, fastest option |
+| **1-5 second latency acceptable** | Elasticsearch | PostgreSQL | Near real-time indexing |
+| **High throughput (>100k ops/sec)** | Kafka | Redis (Bull) | Event streaming |
+| **Low latency + persistence** | Redis + PostgreSQL | RabbitMQ | Cache + database |
+
+#### By Data Characteristics
+
+| Data Type | Best Choice | Alternatives | Notes |
+|-----------|-------------|--------------|-------|
+| **Key-value, small (<1MB)** | Redis | - | Perfect fit |
+| **Structured, transactional** | PostgreSQL | - | ACID required |
+| **Time-series, searchable** | Elasticsearch | InfluxDB | Search + time-series |
+| **Time-series, metrics-only** | InfluxDB | Elasticsearch | Optimized for metrics |
+| **Events, high volume** | Kafka | RabbitMQ | Event streaming |
+| **Events, low volume** | RabbitMQ | Redis (Bull) | Traditional queue |
+| **Documents, searchable** | Elasticsearch | PostgreSQL | Full-text search |
+| **Large files** | S3/Object Storage | - | Not for databases |
+
+#### By Access Patterns
+
+| Access Pattern | Best Choice | Alternatives | Notes |
+|----------------|-------------|--------------|-------|
+| **Read-heavy, cacheable** | Redis + PostgreSQL | - | Cache frequently accessed |
+| **Write-heavy, searchable** | Elasticsearch | PostgreSQL | Optimized for writes + search |
+| **Read/write balanced** | PostgreSQL | Elasticsearch | ACID transactions |
+| **Append-only (logs/events)** | Kafka → Elasticsearch | - | Stream then search |
+| **Random access, fast** | Redis | PostgreSQL | In-memory speed |
+| **Sequential access** | Kafka | RabbitMQ | Event streaming |
+
+#### By Scale Requirements
+
+| Scale | Redis | Elasticsearch | Kafka | RabbitMQ |
+|-------|-------|---------------|-------|----------|
+| **Small (<1M records)** | ✅ Simple | ⚠️ Overkill | ❌ | ⚠️ Overkill |
+| **Medium (1M-100M)** | ✅ Good | ✅ Excellent | ⚠️ Consider | ✅ Good |
+| **Large (100M-1B)** | ⚠️ Memory limit | ✅ Excellent | ✅ Excellent | ⚠️ Consider |
+| **Very Large (>1B)** | ❌ | ✅ With tiering | ✅ Excellent | ❌ |
+
+#### By Operational Complexity
+
+| Complexity Level | Redis | Elasticsearch | Kafka | RabbitMQ |
+|------------------|-------|---------------|-------|----------|
+| **Setup** | ✅ Simple | ⚠️ Medium | ⚠️ Complex | ⚠️ Medium |
+| **Maintenance** | ✅ Low | ⚠️ Medium | ⚠️ High | ⚠️ Medium |
+| **Monitoring** | ✅ Simple | ⚠️ Medium | ⚠️ Complex | ⚠️ Medium |
+| **Scaling** | ✅ Horizontal | ✅ Horizontal | ✅ Horizontal | ⚠️ Vertical preferred |
+
 ### Technology Overlap
 
 **Redis vs RabbitMQ for Queues**:
@@ -813,6 +866,10 @@ Choose the best technology based on your application/service characteristics:
 **Elasticsearch vs PostgreSQL Full-Text Search**:
 - **Elasticsearch**: Complex queries, aggregations, log search
 - **PostgreSQL**: Simple full-text search, already in stack
+
+**Elasticsearch vs InfluxDB**:
+- **Elasticsearch**: Search + time-series, general-purpose
+- **InfluxDB**: Pure time-series, optimized for metrics, no search
 
 ---
 
