@@ -246,3 +246,323 @@ Pino is one of the fastest Node.js loggers:
 - JSON serialization is optimized
 - File writes are buffered
 - Minimal overhead on application performance
+
+---
+
+## Template-Based Spam Detection
+
+### Why Template Hashing for Logs?
+
+Log spam can be a DoS vector and makes debugging difficult. Template hashing helps:
+- **Detect repeated patterns**: "User {ID} failed login" repeated 1000x
+- **Prevent log storage exhaustion**: Throttle repeated log messages
+- **Identify attack patterns**: Same error template with different values
+- **Improve monitoring**: Alert on unusual log patterns
+
+**See**: [Spam Detection Strategy](spam-detection-strategy.md) for complete guide on template hashing.
+
+### Integration with Pino Logger
+
+```typescript
+// logger.js - Enhanced with template-based spam detection
+import pino from 'pino';
+import Redis from 'ioredis';
+import { createHash } from 'crypto';
+
+class TemplateHasher {
+  extractTemplate(message: string): string {
+    let template = message;
+    
+    // Replace common variable patterns
+    template = template.replace(/\b\d{4,}\b/g, '{NUMBER}'); // IDs, order numbers
+    template = template.replace(/\b[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\b/gi, '{UUID}');
+    template = template.replace(/\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/g, '{EMAIL}');
+    template = template.replace(/https?:\/\/[^\s]+/g, '{URL}');
+    template = template.replace(/\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}:\d{2}/g, '{TIMESTAMP}');
+    template = template.replace(/\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b/g, '{IP}');
+    
+    return template;
+  }
+  
+  hashTemplate(template: string): string {
+    return createHash('sha256')
+      .update(template.toLowerCase().trim())
+      .digest('hex');
+  }
+  
+  getTemplateHash(message: string): string {
+    const template = this.extractTemplate(message);
+    return this.hashTemplate(template);
+  }
+}
+
+class LogSpamDetector {
+  private redis: Redis;
+  private templateHasher: TemplateHasher;
+  
+  constructor(redis: Redis) {
+    this.redis = redis;
+    this.templateHasher = new TemplateHasher();
+  }
+  
+  /**
+   * Check if log message should be throttled due to spam
+   * @param level - Log level (error, warn, etc.)
+   * @param message - Log message
+   * @param maxOccurrences - Max occurrences before throttling (default: 10 per minute)
+   * @param timeWindow - Time window in seconds (default: 60)
+   * @returns { shouldLog: boolean, occurrences: number, templateHash: string }
+   */
+  async shouldLog(
+    level: string,
+    message: string,
+    maxOccurrences: number = 10,
+    timeWindow: number = 60
+  ): Promise<{ shouldLog: boolean; occurrences: number; templateHash: string }> {
+    // Only check error/warn levels (most spam-prone)
+    if (level !== 'error' && level !== 'warn') {
+      return { shouldLog: true, occurrences: 0, templateHash: '' };
+    }
+    
+    const templateHash = this.templateHasher.getTemplateHash(message);
+    const key = `log:spam:${level}:${templateHash}`;
+    
+    // Use Lua script for atomic check-and-increment
+    const script = `
+      local key = KEYS[1]
+      local max = tonumber(ARGV[1])
+      local ttl = tonumber(ARGV[2])
+      
+      local count = redis.call('INCR', key)
+      
+      if count == 1 then
+        redis.call('EXPIRE', key, ttl)
+      end
+      
+      if count > max then
+        return {0, count}  -- Don't log (spam detected)
+      else
+        return {1, count}  -- Log normally
+      end
+    `;
+    
+    const result = await this.redis.eval(
+      script,
+      1,
+      key,
+      maxOccurrences,
+      timeWindow
+    ) as [number, number];
+    
+    return {
+      shouldLog: result[0] === 1,
+      occurrences: result[1],
+      templateHash
+    };
+  }
+  
+  /**
+   * Get spam statistics for a template hash
+   */
+  async getSpamStats(templateHash: string, level: string): Promise<number> {
+    const key = `log:spam:${level}:${templateHash}`;
+    const count = await this.redis.get(key);
+    return parseInt(count || '0');
+  }
+}
+
+// Create Pino logger with spam detection
+function createLoggerWithSpamDetection(redis?: Redis) {
+  const spamDetector = redis ? new LogSpamDetector(redis) : null;
+  
+  const logger = pino({
+    level: process.env.LOG_LEVEL || 'info',
+    // ... existing config
+  });
+  
+  // Wrap logger methods to add spam detection
+  if (spamDetector) {
+    const originalError = logger.error.bind(logger);
+    const originalWarn = logger.warn.bind(logger);
+    
+    logger.error = async function(obj: any, msg?: string, ...args: any[]) {
+      const message = msg || obj?.msg || '';
+      const check = await spamDetector.shouldLog('error', message, 10, 60);
+      
+      if (!check.shouldLog) {
+        // Log once that spam was detected (to avoid infinite loop, use original logger)
+        if (check.occurrences === 11) { // First time exceeding threshold
+          originalError({
+            ...obj,
+            logSpamDetected: true,
+            templateHash: check.templateHash,
+            occurrences: check.occurrences,
+            message: `Log spam detected: ${message.substring(0, 100)}...`
+          }, 'Log spam detected - throttling repeated error messages');
+        }
+        return; // Don't log the spam message
+      }
+      
+      return originalError(obj, msg, ...args);
+    };
+    
+    logger.warn = async function(obj: any, msg?: string, ...args: any[]) {
+      const message = msg || obj?.msg || '';
+      const check = await spamDetector.shouldLog('warn', message, 10, 60);
+      
+      if (!check.shouldLog) {
+        if (check.occurrences === 11) {
+          originalWarn({
+            ...obj,
+            logSpamDetected: true,
+            templateHash: check.templateHash,
+            occurrences: check.occurrences,
+            message: `Log spam detected: ${message.substring(0, 100)}...`
+          }, 'Log spam detected - throttling repeated warning messages');
+        }
+        return;
+      }
+      
+      return originalWarn(obj, msg, ...args);
+    };
+  }
+  
+  return logger;
+}
+
+// Usage
+const redis = process.env.REDIS_URL ? new Redis(process.env.REDIS_URL) : undefined;
+export const logger = createLoggerWithSpamDetection(redis);
+```
+
+### Pino Stream with Spam Detection
+
+Alternative approach using Pino streams:
+
+```typescript
+import pino from 'pino';
+import { Transform } from 'stream';
+
+class SpamDetectionStream extends Transform {
+  private spamDetector: LogSpamDetector;
+  
+  constructor(spamDetector: LogSpamDetector) {
+    super({ objectMode: true });
+    this.spamDetector = spamDetector;
+  }
+  
+  async _transform(chunk: any, encoding: string, callback: Function) {
+    const logEntry = JSON.parse(chunk.toString());
+    const level = pino.levels.labels[logEntry.level];
+    const message = logEntry.msg || '';
+    
+    // Check spam for error/warn levels
+    if (level === 'error' || level === 'warn') {
+      const check = await this.spamDetector.shouldLog(level, message);
+      
+      if (!check.shouldLog) {
+        // Don't pass through spam logs
+        // But log once that spam was detected
+        if (check.occurrences === 11) {
+          this.push(JSON.stringify({
+            ...logEntry,
+            msg: `Log spam detected - throttling: ${message.substring(0, 100)}...`,
+            logSpamDetected: true,
+            templateHash: check.templateHash,
+            occurrences: check.occurrences
+          }) + '\n');
+        }
+        return callback();
+      }
+    }
+    
+    // Pass through normal logs
+    this.push(chunk);
+    callback();
+  }
+}
+
+// Create logger with spam detection stream
+const redis = new Redis(process.env.REDIS_URL);
+const spamDetector = new LogSpamDetector(redis);
+const spamStream = new SpamDetectionStream(spamDetector);
+
+const logger = pino({
+  level: process.env.LOG_LEVEL || 'info',
+}, spamStream);
+```
+
+### Configuration
+
+Add to `.env`:
+
+```bash
+# Enable log spam detection
+LOG_SPAM_DETECTION_ENABLED=true
+REDIS_URL=redis://localhost:6379
+
+# Spam detection thresholds
+LOG_SPAM_MAX_ERRORS=10      # Max error occurrences per minute
+LOG_SPAM_MAX_WARNINGS=10    # Max warning occurrences per minute
+LOG_SPAM_WINDOW=60          # Time window in seconds
+```
+
+### Monitoring Log Spam
+
+```typescript
+// Monitor log spam patterns
+async function getLogSpamReport(level: string = 'error') {
+  const redis = new Redis(process.env.REDIS_URL);
+  const keys = await redis.keys(`log:spam:${level}:*`);
+  
+  const report = await Promise.all(
+    keys.map(async (key) => {
+      const count = await redis.get(key);
+      const templateHash = key.split(':').pop();
+      return {
+        templateHash,
+        occurrences: parseInt(count || '0'),
+        level
+      };
+    })
+  );
+  
+  // Sort by occurrences (most spam first)
+  return report.sort((a, b) => b.occurrences - a.occurrences);
+}
+
+// Alert on high spam rates
+async function checkLogSpamAlerts() {
+  const errorSpam = await getLogSpamReport('error');
+  const warningSpam = await getLogSpamReport('warn');
+  
+  // Alert if any template exceeds 100 occurrences
+  const highSpam = [...errorSpam, ...warningSpam].filter(s => s.occurrences > 100);
+  
+  if (highSpam.length > 0) {
+    await alertManager.sendAlert({
+      severity: 'warning',
+      message: 'High log spam detected',
+      details: highSpam
+    });
+  }
+}
+```
+
+### Benefits
+
+1. **Prevents log storage exhaustion**: Throttles repeated messages
+2. **Improves signal-to-noise**: Focus on unique errors, not spam
+3. **Detects attack patterns**: Identifies repeated error templates
+4. **Performance**: Redis lookups are < 1ms (vs database queries)
+5. **Monitoring**: Track spam patterns for security analysis
+
+### Best Practices
+
+1. **Only check error/warn levels**: Don't throttle info/debug (less spam-prone)
+2. **Whitelist legitimate repeated messages**: System health checks, etc.
+3. **Monitor spam patterns**: Alert on unusual spikes
+4. **Adjust thresholds**: Tune based on your application's normal patterns
+5. **Log spam detection events**: Record when spam is detected for analysis
+
+**See Also**: [Spam Detection Strategy](spam-detection-strategy.md) for complete template hashing guide.

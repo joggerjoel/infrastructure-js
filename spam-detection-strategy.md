@@ -1268,8 +1268,41 @@ Message → Template Extraction → Template Hash → Redis Lookup
 
 ---
 
+## Logging Integration
+
+### Template Hashing in Logs
+
+Log spam can be a DoS vector and makes debugging difficult. Template hashing should be integrated into the logging pipeline to:
+
+- **Detect repeated log patterns**: "User {ID} failed login" repeated 1000x
+- **Prevent log storage exhaustion**: Throttle repeated log messages
+- **Identify attack patterns**: Same error template with different values
+- **Improve monitoring**: Alert on unusual log patterns
+
+**Implementation**: See [Logging](logging.md#template-based-spam-detection) for complete integration guide with Pino logger.
+
+**Key Points**:
+- Extract template from log messages (replace IDs, timestamps, etc.)
+- Use Redis to track template hash occurrences
+- Throttle repeated error/warn messages (not info/debug)
+- Log spam detection events for monitoring
+- Alert on high spam rates
+
+**Example**:
+```typescript
+// Log spam detection in Pino logger
+const check = await spamDetector.shouldLog('error', message, 10, 60);
+if (!check.shouldLog) {
+  // Don't log spam, but log detection event once
+  return;
+}
+```
+
+---
+
 ## See Also
 
+- [Logging](logging.md#template-based-spam-detection) - Template-based spam detection in logging pipeline
 - [Security](security.md) - Rate limiting and security practices
 - [Messaging & Search Strategy](messaging-and-search-strategy.md) - Redis usage patterns
 - [Intelligent Caching](intelligent-caching.md) - Caching strategies
