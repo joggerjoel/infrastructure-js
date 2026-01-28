@@ -14,6 +14,20 @@ This directory contains comprehensive documentation for the Node.js/TypeScript s
 
 ## 🚀 Quick Start
 
+### By Role
+
+**Users**:
+- See [Roles & Access](roles-and-access.md#for-users) for user documentation
+- [API Documentation](api-documentation.md) - How to use the API
+
+**Developers**:
+- See [Roles & Access](roles-and-access.md#for-developers) for developer documentation
+- Start with: [Implementation Status](implementation-status.md), [Environment Management](environment-mode.md)
+
+**DevOps**:
+- See [Roles & Access](roles-and-access.md#for-devops) for DevOps documentation
+- Start with: [DevOps Overview](devops.md), [Escalation Strategy](escalation-strategy.md), [Runbooks](runbooks/)
+
 ### For New Engineers
 1. Read [Implementation Status](implementation-status.md) - What's actually implemented
 2. Read [DevOps Overview](devops.md) - Central index for all DevOps docs
@@ -24,7 +38,7 @@ This directory contains comprehensive documentation for the Node.js/TypeScript s
 1. Bookmark [Runbooks](runbooks/) - Incident response procedures
 2. Access Grafana dashboards (see [Prometheus](prometheus.md))
 3. Know how to read logs (see [Logging](logging.md))
-4. Understand escalation path (see [DevOps](devops.md#on-call-responsibilities))
+4. Understand escalation path (see [Escalation Strategy](escalation-strategy.md))
 
 ### For DevOps/SRE
 1. Review [Implementation Status](implementation-status.md)
@@ -71,6 +85,7 @@ This directory contains comprehensive documentation for the Node.js/TypeScript s
 ### 🛠️ Operations
 | Document | Purpose | Status |
 |----------|---------|--------|
+| **[Roles & Access](roles-and-access.md)** | User, Developer, DevOps role definitions and permissions | 💡 Guidance |
 | **[Runbooks](runbooks/)** | Incident response procedures | 🚧 Partial |
 | **[Escalation Strategy](escalation-strategy.md)** | Multi-channel alerting (Logs, GUI, Email, SMS/WhatsApp) | 💡 Guidance |
 | **[Architecture Practices](architecture-practices.md)** | ADRs, SLOs, ownership, incident postmortems | 💡 Guidance |
