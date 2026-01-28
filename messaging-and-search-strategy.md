@@ -27,8 +27,8 @@
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                    Application Layer                         │
-│  [Node.js/Express API]  [Background Workers]  [Services]   │
+│                      Service Layer                           │
+│  [API Services]  [Background Workers]  [Microservices]      │
 └─────────────────────────────────────────────────────────────┘
          │              │              │              │
          ▼              ▼              ▼              ▼
@@ -55,8 +55,7 @@
 
 ### ✅ Best Use Cases
 
-#### 1. **Application Cache (L2 Cache)**
-**Current Status**: Already planned in `intelligent-caching.md`
+#### 1. **Cache Layer (L2 Cache)**
 
 ```typescript
 // Multi-tier cache: Memory → Redis → Database
@@ -174,7 +173,6 @@ const emailQueue = new Queue('email', {
 ### ✅ Best Use Cases
 
 #### 1. **Log Aggregation & Search (ELK Stack)**
-**Current Status**: Logs are file-based (`logging.md`), no aggregation yet
 
 ```typescript
 // Send logs to Elasticsearch via Logstash or directly
@@ -211,9 +209,9 @@ async function indexLog(logEntry: LogEntry) {
 - **Visualization**: Kibana dashboards for log analysis
 - **Retention**: Easy to manage old indices (delete by date)
 
-**Integration with Current Logging**:
+**Integration with Structured Logging**:
 ```typescript
-// Extend current Pino logger to also send to Elasticsearch
+// Extend structured logger to also send to Elasticsearch
 import pino from 'pino';
 
 const logger = pino({
@@ -234,12 +232,12 @@ if (process.env.ELASTICSEARCH_ENABLED === 'true') {
 }
 ```
 
-#### 2. **Full-Text Search in Application Data**
+#### 2. **Full-Text Search in Domain Data**
 ```typescript
-// Search reconciliation records
-async function searchRecords(query: string, filters: SearchFilters) {
+// Search domain entities with full-text capabilities
+async function searchEntities(query: string, filters: SearchFilters) {
   const result = await esClient.search({
-    index: 'reconciliation-records',
+    index: 'domain-entities',
     body: {
       query: {
         bool: {
@@ -247,7 +245,7 @@ async function searchRecords(query: string, filters: SearchFilters) {
             {
               multi_match: {
                 query: query,
-                fields: ['venue_name^2', 'event_name', 'description'], // venue_name boosted
+                fields: ['name^2', 'title', 'description'], // name field boosted
                 fuzziness: 'AUTO',
               }
             }
@@ -260,8 +258,8 @@ async function searchRecords(query: string, filters: SearchFilters) {
       },
       highlight: {
         fields: {
-          venue_name: {},
-          event_name: {}
+          name: {},
+          title: {}
         }
       }
     }
@@ -331,8 +329,8 @@ async function getErrorAnalytics(timeRange: string) {
 - Enable Kibana dashboards for operations team
 - **Value**: Dramatically faster incident investigation
 
-**Phase 2**: Application search
-- Add full-text search for reconciliation records
+**Phase 2**: Domain data search
+- Add full-text search for domain entities
 - **Value**: Better user experience, faster queries
 
 ---
@@ -347,35 +345,35 @@ async function getErrorAnalytics(timeRange: string) {
 import { Kafka } from 'kafkajs';
 
 const kafka = new Kafka({
-  clientId: 'reconciliation-api',
+  clientId: 'api-service',
   brokers: process.env.KAFKA_BROKERS.split(','),
 });
 
 const producer = kafka.producer();
 
-// Emit reconciliation events
-async function createReconciliationRecord(data: RecordData) {
+// Emit domain events
+async function createEntity(data: EntityData) {
   // Save to database
-  const record = await db.query(
-    'INSERT INTO reconciliation_records (...) VALUES (...) RETURNING *',
+  const entity = await db.query(
+    'INSERT INTO entities (...) VALUES (...) RETURNING *',
     [data]
   );
   
   // Emit event to Kafka
   await producer.send({
-    topic: 'reconciliation.events',
+    topic: 'domain.events',
     messages: [{
-      key: record.id.toString(),
+      key: entity.id.toString(),
       value: JSON.stringify({
-        eventType: 'reconciliation.created',
-        recordId: record.id,
+        eventType: 'entity.created',
+        entityId: entity.id,
         timestamp: new Date().toISOString(),
-        data: record
+        data: entity
       })
     }]
   });
   
-  return record;
+  return entity;
 }
 ```
 
@@ -389,14 +387,14 @@ async function createReconciliationRecord(data: RecordData) {
 ```typescript
 // Store all state changes as events
 const events = [
-  { type: 'reconciliation.created', data: {...} },
-  { type: 'reconciliation.updated', data: {...} },
-  { type: 'reconciliation.approved', data: {...} },
+  { type: 'entity.created', data: {...} },
+  { type: 'entity.updated', data: {...} },
+  { type: 'entity.approved', data: {...} },
 ];
 
 // Reconstruct current state from events
-async function getReconciliationState(recordId: string) {
-  const events = await kafkaConsumer.getEvents('reconciliation.events', recordId);
+async function getEntityState(entityId: string) {
+  const events = await kafkaConsumer.getEvents('domain.events', entityId);
   return events.reduce((state, event) => applyEvent(state, event), initialState);
 }
 ```
@@ -426,9 +424,9 @@ await consumer.run({
 // Stream logs through Kafka to Elasticsearch
 // This decouples log producers from Elasticsearch
 
-// Producer (in your app)
+// Producer (in service)
 await producer.send({
-  topic: 'application.logs',
+  topic: 'service.logs',
   messages: [{
     value: JSON.stringify(logEntry)
   }]
@@ -436,7 +434,7 @@ await producer.send({
 
 // Consumer (separate service)
 // Consumes from Kafka and indexes to Elasticsearch
-// This way Elasticsearch issues don't affect your app
+// This way Elasticsearch issues don't affect the service
 ```
 
 **Why Kafka for Log Streaming?**
@@ -645,9 +643,9 @@ channel.consume(replyQueue.queue, (msg) => {
 
 ### Pattern 1: Log Pipeline
 ```
-Application → Kafka → Elasticsearch → Kibana
-              ↓
-              S3 (long-term storage)
+Service → Kafka → Elasticsearch → Kibana
+         ↓
+         S3 (long-term storage)
 ```
 
 **Benefits**:
@@ -716,8 +714,8 @@ Simple Jobs → Redis Bull (high throughput)
 ### Phase 3: Search (Month 3-4)
 **Priority**: 🟢 P2 - Nice to Have
 
-3. **Elasticsearch for Application Search**
-   - [ ] Index reconciliation records
+3. **Elasticsearch for Domain Data Search**
+   - [ ] Index domain entities
    - [ ] Implement search API
    - [ ] Add search UI
    - **Value**: Better user experience
@@ -778,7 +776,7 @@ Simple Jobs → Redis Bull (high throughput)
 
 **Recommended Stack**:
 ```
-Application
+Services
     ↓
 Redis (Cache, Sessions, Simple Queues)
     ↓

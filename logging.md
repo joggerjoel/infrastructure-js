@@ -10,7 +10,7 @@
 
 The backend uses [Pino](https://getpino.io/) for structured logging with file rotation and compression.
 
-**In this project (stubhub-venue-scraper):** Logging is implemented in **`logger.js`** at the project root. The scraper and `stubhub-browser-utils.js` use `const { log, warn, error } = require('./logger')`. Log files use the **`scraper-YYYYMMDD_HHMMSS`** prefix (e.g. `scraper-20260127_191934.log`) under `logs/YYYY/YYYYMM/YYYYMMDD/`. Set `LOG_DIR`, `LOG_LEVEL`, and `NODE_ENV` in `.env` as below.
+**In this project ({app_name}):** Logging is implemented in **`logger.js`** at the project root. Services use `const { log, warn, error } = require('./logger')`. Log files use the **`{app_name}-YYYYMMDD_HHMMSS`** prefix (e.g. `{app_name}-20260127_191934.log`) under `logs/YYYY/YYYYMM/YYYYMMDD/`. Set `LOG_DIR`, `LOG_LEVEL`, and `NODE_ENV` in `.env` as below.
 
 **Related docs**
 
