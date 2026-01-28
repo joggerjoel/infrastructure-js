@@ -489,7 +489,7 @@ if (config.NODE_ENV === 'production') {
 
 ## See Also
 
-- [LOGGING.md](LOGGING.md) - Structured logging details
+- [logging.md](logging.md) - Structured logging details
 - [prometheus.md](prometheus.md) - Metrics and monitoring
 - [tracing.md](tracing.md) - Distributed tracing
 - [environment-mode.md](environment-mode.md) - Environment configuration

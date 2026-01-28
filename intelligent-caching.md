@@ -1642,12 +1642,12 @@ pg_stat_activity
 
 ## Next Steps
 
-1. **Read**: [Database Layer](DATABASE_LAYER.md) for query optimization
-2. **Read**: [Performance & Scalability](PERFORMANCE_SCALABILITY.md) for load balancing
+1. **Read**: [Database Layer](database-layer.md) for query optimization
+2. **Read**: [Performance & Scalability](performance-scalability.md) for load balancing
 3. **Implement**: Cache metrics endpoint
 4. **Set up**: Grafana dashboard for cache monitoring
 5. **Test**: Load test with k6 to verify performance
 
 ---
 
-**Questions?** Check [Integration Guide](INTEGRATION_GUIDE.md) or ask in #infrastructure
+**Questions?** Check [Integration Guide](integration-guide.md) or ask in #infrastructure

@@ -28,7 +28,7 @@
 
 | Feature | Status | Evidence | Documentation | Priority | Notes |
 |---------|--------|----------|---------------|----------|-------|
-| **Structured Logging** | ✅ IMPLEMENTED | `logger.js`, log files in `logs/` | [LOGGING.md](LOGGING.md) | - | Production-ready |
+| **Structured Logging** | ✅ IMPLEMENTED | `logger.js`, log files in `logs/` | [logging.md](logging.md) | - | Production-ready |
 | **Prometheus Metrics** | ❌ NOT IMPL | No `/metrics` endpoint found | [prometheus.md](prometheus.md) | P1 | Need to implement |
 | **Distributed Tracing** | ❌ NOT IMPL | No OpenTelemetry setup | [tracing.md](tracing.md) | P2 | Consider after metrics |
 | **Grafana Dashboards** | ❌ NOT IMPL | No Grafana setup | [prometheus.md](prometheus.md) | P1 | Depends on metrics |

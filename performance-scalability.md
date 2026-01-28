@@ -375,11 +375,11 @@ emailQueue.process(async (job) => {
 
 ### Database Query Optimization
 
-See [DATABASE_LAYER.md](DATABASE_LAYER.md#query-optimization) for details.
+See [database-layer.md](database-layer.md#query-optimization) for details.
 
 ### Caching Strategy
 
-See [INTELLIGENT_CACHING.md](INTELLIGENT_CACHING.md) for comprehensive caching patterns.
+See [intelligent-caching.md](intelligent-caching.md) for comprehensive caching patterns.
 
 ### Response Compression
 
@@ -674,7 +674,7 @@ app.use((req, res, next) => {
 
 ## See Also
 
-- [Database Layer](DATABASE_LAYER.md) - Query optimization, connection pooling
-- [Intelligent Caching](INTELLIGENT_CACHING.md) - Caching strategies
+- [Database Layer](database-layer.md) - Query optimization, connection pooling
+- [Intelligent Caching](intelligent-caching.md) - Caching strategies
 - [Prometheus Monitoring](prometheus.md) - Metrics and dashboards
 - [DevOps Overview](devops.md) - Deployment and operations

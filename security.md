@@ -1256,8 +1256,8 @@ export class SecurityIncidentManager {
 
 ## Next Steps
 
-1. **Read**: [Intelligent Caching](INTELLIGENT_CACHING.md) for secure session storage
-2. **Read**: [Database Layer](DATABASE_LAYER.md) for secure database practices
+1. **Read**: [Intelligent Caching](intelligent-caching.md) for secure session storage
+2. **Read**: [Database Layer](database-layer.md) for secure database practices
 3. **Implement**: Authentication middleware
 4. **Set up**: Rate limiting
 5. **Review**: All dependencies for vulnerabilities

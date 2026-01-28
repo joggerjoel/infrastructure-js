@@ -21,7 +21,7 @@ This document serves as the **central index** for all DevOps-related documentati
 
 ### 📊 Monitoring & Observability
 - **[Prometheus & Grafana](prometheus.md)** - Metrics collection, dashboards, alerts
-- **[Logging](LOGGING.md)** - Structured logging with Pino, log management
+- **[Logging](logging.md)** - Structured logging with Pino, log management
 - **[Distributed Tracing](tracing.md)** - OpenTelemetry, request correlation
 
 ### 🛠️ Operations
@@ -30,9 +30,9 @@ This document serves as the **central index** for all DevOps-related documentati
 - **[MVP Documentation Plan](plan.md)** - Documentation priorities and templates
 
 ### 📋 Reference
-- **[Implementation Status](IMPLEMENTATION_STATUS.md)** - What's actually implemented
+- **[Implementation Status](implementation-status.md)** - What's actually implemented
 - **[Configuration Reference](CONFIGURATION.md)** - All environment variables *(coming soon)*
-- **[Integration Guide](INTEGRATION_GUIDE.md)** - How components work together *(coming soon)*
+- **[Integration Guide](integration-guide.md)** - How components work together *(coming soon)*
 
 ---
 
@@ -81,7 +81,7 @@ graph LR
 - Distributed tracing (OpenTelemetry)
 - Dashboards (Grafana)
 
-**Documentation**: [Prometheus](prometheus.md), [Logging](LOGGING.md), [Tracing](tracing.md)
+**Documentation**: [Prometheus](prometheus.md), [Logging](logging.md), [Tracing](tracing.md)
 
 ### 5. **Operate**
 - Health checks
@@ -127,7 +127,7 @@ curl http://localhost:3000/metrics
 
 ### View Logs
 ```bash
-# See: LOGGING.md for details
+# See: logging.md for details
 tail -f logs/backend-current.log
 # Or use log viewer
 npm run logs:view

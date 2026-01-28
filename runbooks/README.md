@@ -107,5 +107,5 @@ To add a new runbook:
 
 - [DevOps Overview](../devops.md)
 - [Prometheus Monitoring](../prometheus.md)
-- [Logging Guide](../LOGGING.md)
-- [Implementation Status](../IMPLEMENTATION_STATUS.md)
+- [Logging Guide](../logging.md)
+- [Implementation Status](../implementation-status.md)

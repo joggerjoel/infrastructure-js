@@ -285,5 +285,5 @@ Increased database pool size, optimized slow queries
 
 ## See Also
 - [Prometheus Monitoring](../prometheus.md)
-- [Logging Guide](../LOGGING.md)
+- [Logging Guide](../logging.md)
 - [Error Handling](../ERROR_HANDLING.md)

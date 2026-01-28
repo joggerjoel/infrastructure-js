@@ -1036,7 +1036,7 @@ Full graceful shutdown (15-30 minutes to implement):
 
 ## Related Documentation
 
-- [Logging Configuration](./LOGGING.md) - Ensure logs capture shutdown events
+- [Logging Configuration](./logging.md) - Ensure logs capture shutdown events
 - [Deployment Runbook](./DEPLOYMENT.md) - Rolling deployment procedures
 - [Incident Response](./INCIDENT_RESPONSE.md) - Handling shutdown failures
 - [Monitoring Dashboard](./MONITORING.md) - Track shutdown metrics

@@ -1913,7 +1913,7 @@ documentation_ownership:
     review_cadence: "monthly"
     last_validated: "2026-01-15"
     
-  SECURITY.md:
+  security.md:
     owner: "@security-team"
     review_cadence: "quarterly"
     last_validated: "2026-01-01"

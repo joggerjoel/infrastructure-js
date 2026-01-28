@@ -146,7 +146,7 @@ kubectl scale deployment api --replicas=3
 - **Test Procedure**: Restore to staging environment
 5. Logging Setup (✓ Already Complete)
 Why: Can't debug what you can't see
-Status: ✅ Done (see LOGGING.md)
+Status: ✅ Done (see logging.md)
 
 Tier 1: Within First Month (High Value)
 Timeline: Complete within 30 days of launch

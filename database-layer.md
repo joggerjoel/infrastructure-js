@@ -1239,12 +1239,12 @@ SELECT pg_terminate_backend(pid);
 
 ## Next Steps
 
-1. **Read**: [Intelligent Caching](INTELLIGENT_CACHING.md) for query result caching
-2. **Read**: [Performance & Scalability](PERFORMANCE_SCALABILITY.md) for load balancing
+1. **Read**: [Intelligent Caching](intelligent-caching.md) for query result caching
+2. **Read**: [Performance & Scalability](performance-scalability.md) for load balancing
 3. **Implement**: Database metrics endpoint
 4. **Set up**: Automated backup testing
 5. **Review**: All queries with EXPLAIN ANALYZE
 
 ---
 
-**Questions?** Check [Integration Guide](INTEGRATION_GUIDE.md#database-integration) or ask in #database
+**Questions?** Check [Integration Guide](integration-guide.md#database-integration) or ask in #database

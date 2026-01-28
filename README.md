@@ -15,19 +15,19 @@ This directory contains comprehensive documentation for the Node.js/TypeScript s
 ## 🚀 Quick Start
 
 ### For New Engineers
-1. Read [Implementation Status](IMPLEMENTATION_STATUS.md) - What's actually implemented
+1. Read [Implementation Status](implementation-status.md) - What's actually implemented
 2. Read [DevOps Overview](devops.md) - Central index for all DevOps docs
-3. Read [Integration Guide](INTEGRATION_GUIDE.md) - How components work together
+3. Read [Integration Guide](integration-guide.md) - How components work together
 4. Set up your environment: [Environment Management](environment-mode.md)
 
 ### For On-Call Engineers
 1. Bookmark [Runbooks](runbooks/) - Incident response procedures
 2. Access Grafana dashboards (see [Prometheus](prometheus.md))
-3. Know how to read logs (see [Logging](LOGGING.md))
+3. Know how to read logs (see [Logging](logging.md))
 4. Understand escalation path (see [DevOps](devops.md#on-call-responsibilities))
 
 ### For DevOps/SRE
-1. Review [Implementation Status](IMPLEMENTATION_STATUS.md)
+1. Review [Implementation Status](implementation-status.md)
 2. Set up monitoring: [Prometheus & Grafana](prometheus.md)
 3. Configure CI/CD: [CI/CD Pipelines](cicd.md)
 4. Create runbooks: [Runbooks Template](runbooks/README.md)
@@ -39,10 +39,10 @@ This directory contains comprehensive documentation for the Node.js/TypeScript s
 ### 🎯 Essential (Start Here)
 | Document | Purpose | Status |
 |----------|---------|--------|
-| **[Implementation Status](IMPLEMENTATION_STATUS.md)** | What's actually implemented vs documented | ✅ Current |
+| **[Implementation Status](implementation-status.md)** | What's actually implemented vs documented | ✅ Current |
 | **[DevOps Overview](devops.md)** | Central index for all DevOps documentation | ✅ Current |
-| **[Integration Guide](INTEGRATION_GUIDE.md)** | How infrastructure components work together | ✅ Current |
-| **[Architecture Practices](ARCHITECTURE_PRACTICES.md)** | ADRs, SLOs, ownership, data discipline, operational excellence | 💡 Guidance |
+| **[Integration Guide](integration-guide.md)** | How infrastructure components work together | ✅ Current |
+| **[Architecture Practices](architecture-practices.md)** | ADRs, SLOs, ownership, data discipline, operational excellence | 💡 Guidance |
 | **[MVP Documentation Plan](plan.md)** | Documentation priorities and templates | ✅ Current |
 
 ### 🔧 Core Infrastructure
@@ -55,7 +55,7 @@ This directory contains comprehensive documentation for the Node.js/TypeScript s
 ### 📊 Observability
 | Document | Purpose | Status |
 |----------|---------|--------|
-| **[Logging](LOGGING.md)** | Structured logging with Pino | ✅ Implemented |
+| **[Logging](logging.md)** | Structured logging with Pino | ✅ Implemented |
 | **[Prometheus & Grafana](prometheus.md)** | Metrics, dashboards, alerts | 💡 Guidance |
 | **[Distributed Tracing](tracing.md)** | OpenTelemetry, request correlation | 💡 Guidance |
 
@@ -70,7 +70,7 @@ This directory contains comprehensive documentation for the Node.js/TypeScript s
 | Document | Purpose | Status |
 |----------|---------|--------|
 | **[Runbooks](runbooks/)** | Incident response procedures | 🚧 Partial |
-| **[Architecture Practices](ARCHITECTURE_PRACTICES.md)** | ADRs, SLOs, ownership, incident postmortems | 💡 Guidance |
+| **[Architecture Practices](architecture-practices.md)** | ADRs, SLOs, ownership, incident postmortems | 💡 Guidance |
 
 ---
 
@@ -86,19 +86,19 @@ This directory contains comprehensive documentation for the Node.js/TypeScript s
 #### Investigate an Incident
 1. [Runbooks](runbooks/) - Find the relevant runbook
 2. [Prometheus](prometheus.md) - Check metrics and dashboards
-3. [Logging](LOGGING.md) - Review logs
-4. [Integration Guide](INTEGRATION_GUIDE.md#error-handling-flow) - Understand error flow
+3. [Logging](logging.md) - Review logs
+4. [Integration Guide](integration-guide.md#error-handling-flow) - Understand error flow
 
 #### Set Up Monitoring
 1. [Prometheus & Grafana](prometheus.md) - Metrics and dashboards
-2. [Logging](LOGGING.md) - Log aggregation
+2. [Logging](logging.md) - Log aggregation
 3. [Distributed Tracing](tracing.md) - Request tracing
-4. [Integration Guide](INTEGRATION_GUIDE.md#observability-stack-integration) - How they work together
+4. [Integration Guide](integration-guide.md#observability-stack-integration) - How they work together
 
 #### Configure a New Environment
 1. [Environment Management](environment-mode.md) - Environment setup
-2. [Implementation Status](IMPLEMENTATION_STATUS.md) - What needs to be configured
-3. [Integration Guide](INTEGRATION_GUIDE.md#environment-specific-configurations) - Environment-specific settings
+2. [Implementation Status](implementation-status.md) - What needs to be configured
+3. [Integration Guide](integration-guide.md#environment-specific-configurations) - Environment-specific settings
 
 #### Add API Documentation
 1. [API Documentation](api-documentation.md) - OpenAPI/Swagger guide
@@ -106,7 +106,7 @@ This directory contains comprehensive documentation for the Node.js/TypeScript s
 
 #### Handle Graceful Shutdown
 1. [Graceful Shutdown](graceful-shutdown.md) - Signal handling guide
-2. [Integration Guide](INTEGRATION_GUIDE.md) - How shutdown integrates with other components
+2. [Integration Guide](integration-guide.md) - How shutdown integrates with other components
 
 ---
 
@@ -118,7 +118,7 @@ This directory contains comprehensive documentation for the Node.js/TypeScript s
 - 💡 **GUIDANCE**: General best practices, not project-specific
 - ❓ **UNKNOWN**: Needs investigation
 
-See [Implementation Status](IMPLEMENTATION_STATUS.md) for detailed status of each feature.
+See [Implementation Status](implementation-status.md) for detailed status of each feature.
 
 ---
 
@@ -126,7 +126,7 @@ See [Implementation Status](IMPLEMENTATION_STATUS.md) for detailed status of eac
 
 ### Keeping Docs Up-to-Date
 
-1. **After implementing a feature**: Update [Implementation Status](IMPLEMENTATION_STATUS.md)
+1. **After implementing a feature**: Update [Implementation Status](implementation-status.md)
 2. **After an incident**: Update relevant [runbook](runbooks/)
 3. **After deployment**: Update version info in docs
 4. **Quarterly**: Review all docs for accuracy
@@ -162,7 +162,7 @@ See [Reorganization Plan](/home/joggerjoel/.gemini/antigravity/brain/ded74c2c-72
 - [ ] Add Quick Navigation to long docs
 - [ ] Add TL;DR sections
 - [ ] Add "Testing This Feature" sections
-- [ ] Standardize all docs to LOGGING.md maturity level
+- [ ] Standardize all docs to logging.md maturity level
 
 ### Phase 4: Directory Reorganization (Future)
 - [ ] Reorganize into subdirectories (core/, observability/, development/, operations/)

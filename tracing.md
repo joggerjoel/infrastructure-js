@@ -1081,7 +1081,7 @@ tracer.startActiveSpan('businessOperation', async (span) => {
 ---
 
 ## Related Documentation
-- [Logging Guide](./LOGGING.md) - Structured logging foundation
+- [Logging Guide](./logging.md) - Structured logging foundation
 - [Monitoring Guide](./MONITORING.md) - Metrics and alerting
 - [Performance Optimization](./PERFORMANCE.md) - Using traces to optimize
 

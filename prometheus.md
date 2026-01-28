@@ -19,7 +19,7 @@ Monitoring is critical for understanding system health, detecting issues before 
 ### The Three Pillars of Observability
 
 1. **Metrics** (this guide): Numbers over time (CPU, requests/sec, latency)
-2. **Logs**: Individual events (already covered in LOGGING.md)
+2. **Logs**: Individual events (already covered in logging.md)
 3. **Traces**: Request flows across services (future: distributed tracing)
 
 ### What You Can't See, You Can't Fix
@@ -1256,7 +1256,7 @@ docker-compose up -d
 - **ROI**: Prevents hours/days of debugging, catches issues before users
 
 ### Related Documentation
-- [Logging Guide](./LOGGING.md) - Structured logging
+- [Logging Guide](./logging.md) - Structured logging
 - [Health Checks](./HEALTH_CHECKS.md) - Health endpoints
 - [Alerting Runbooks](./RUNBOOKS.md) - Incident response
 - [Performance Optimization](./PERFORMANCE.md) - Using metrics to optimize

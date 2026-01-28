@@ -677,7 +677,7 @@ await Promise.all(
 
 ## See Also
 
-- [Performance & Scalability](PERFORMANCE_SCALABILITY.md) - Overall performance optimization
-- [Node.js Cluster Mode](PERFORMANCE_SCALABILITY.md#nodejs-cluster-mode) - Process-level parallelism
-- [Request Queuing](PERFORMANCE_SCALABILITY.md#request-queuing) - Background job processing
+- [Performance & Scalability](performance-scalability.md) - Overall performance optimization
+- [Node.js Cluster Mode](performance-scalability.md#nodejs-cluster-mode) - Process-level parallelism
+- [Request Queuing](performance-scalability.md#request-queuing) - Background job processing
 - [Monitoring](prometheus.md) - Track worker pool metrics
