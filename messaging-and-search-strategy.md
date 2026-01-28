@@ -873,6 +873,149 @@ Choose the best technology based on your application/service characteristics:
 
 ---
 
+## Application/Service Selection Guide
+
+### Quick Decision Tree
+
+```
+Start: What type of application/service are you building?
+
+├─ User-Facing Web Application?
+│  ├─ Need search? → Elasticsearch + Redis + PostgreSQL
+│  └─ No search? → Redis + PostgreSQL
+│
+├─ API Service?
+│  ├─ High throughput? → Redis (cache) + PostgreSQL
+│  └─ Need rate limiting? → Redis
+│
+├─ Search Service?
+│  └─ Elasticsearch (primary) + PostgreSQL (source of truth)
+│
+├─ Analytics/Reporting Service?
+│  ├─ Need search? → Elasticsearch
+│  └─ Metrics only? → InfluxDB or Elasticsearch
+│
+├─ Log Aggregation Service?
+│  └─ Elasticsearch (via Kafka for high volume)
+│
+├─ Event Processing Service?
+│  ├─ High volume (>10k events/sec)? → Kafka
+│  └─ Low volume? → RabbitMQ or Redis (Bull)
+│
+├─ Background Job Service?
+│  ├─ Critical jobs? → RabbitMQ
+│  └─ Simple jobs? → Redis (Bull)
+│
+├─ Real-Time Dashboard?
+│  └─ Redis (current) + Elasticsearch (historical)
+│
+└─ Notification Service?
+   └─ RabbitMQ (guaranteed delivery)
+```
+
+### Common Application Patterns
+
+#### Pattern 1: Standard Web Application
+```
+[Frontend] → [API Gateway] → [Application Service]
+                                      ↓
+                    ┌─────────────────┴─────────────────┐
+                    ↓                                   ↓
+            [Redis Cache]                      [PostgreSQL]
+                    ↓                                   ↓
+            [Session Store]                    [Source of Truth]
+```
+
+**Technologies**: Redis + PostgreSQL  
+**Add Elasticsearch if**: You need search functionality
+
+#### Pattern 2: Search-Heavy Application
+```
+[Frontend] → [Search API] → [Elasticsearch]
+                              ↑
+                              │ Sync
+                              ↓
+                        [PostgreSQL]
+                        (Source of Truth)
+```
+
+**Technologies**: Elasticsearch + PostgreSQL  
+**Sync**: PostgreSQL → Elasticsearch (via triggers or CDC)
+
+#### Pattern 3: Real-Time Analytics Application
+```
+[Services] → [Kafka] → [Elasticsearch] → [Dashboards]
+              ↓
+         [Redis] (current state)
+```
+
+**Technologies**: Kafka + Elasticsearch + Redis  
+**Why**: Kafka for streaming, Elasticsearch for search/analytics, Redis for current state
+
+#### Pattern 4: Event-Driven Microservices
+```
+[Service A] → [Kafka] → [Service B]
+                        → [Service C]
+                        → [Elasticsearch] (for search)
+```
+
+**Technologies**: Kafka + Elasticsearch  
+**Why**: Loose coupling, multiple consumers, searchable events
+
+#### Pattern 5: Background Processing Application
+```
+[API] → [RabbitMQ] → [Worker 1]
+                    → [Worker 2]
+                    → [Worker 3]
+```
+
+**Technologies**: RabbitMQ (or Redis Bull)  
+**Why**: Reliable job processing, guaranteed delivery
+
+### Decision Criteria Summary
+
+**Choose Redis when**:
+- ✅ Need sub-100ms latency
+- ✅ Simple key-value operations
+- ✅ Caching or session storage
+- ✅ Rate limiting
+- ✅ Simple task queues
+
+**Choose Elasticsearch when**:
+- ✅ Need full-text search
+- ✅ Time-series data with search
+- ✅ Log aggregation and analysis
+- ✅ Complex aggregations
+- ✅ Historical real-time data (1s delay acceptable)
+
+**Choose Kafka when**:
+- ✅ High-volume event streaming (>10k events/sec)
+- ✅ Multiple consumers needed
+- ✅ Event replay required
+- ✅ Decoupling services
+- ✅ Log streaming to multiple sinks
+
+**Choose RabbitMQ when**:
+- ✅ Guaranteed message delivery required
+- ✅ Critical background jobs
+- ✅ Request/response patterns
+- ✅ Priority queues needed
+- ✅ Low to medium volume (<50k msgs/sec)
+
+**Choose PostgreSQL when**:
+- ✅ ACID transactions required
+- ✅ Relational data
+- ✅ Source of truth
+- ✅ Simple full-text search (if no Elasticsearch)
+
+**Choose InfluxDB when**:
+- ✅ Pure time-series metrics
+- ✅ No search needed
+- ✅ High write throughput
+- ✅ Metrics-focused use case
+
+---
+
 ## Integration Patterns
 
 ### Pattern 1: Log Pipeline
