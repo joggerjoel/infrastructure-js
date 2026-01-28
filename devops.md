@@ -158,6 +158,8 @@ npm run logs:view
 3. **Level 3**: Engineering manager
 4. **Level 4**: CTO
 
+**See**: [Escalation Strategy](escalation-strategy.md) for detailed multi-channel escalation (Logs, GUI, Email, SMS/WhatsApp)
+
 ### Tools Access Required
 - [ ] Grafana dashboard access
 - [ ] Production server SSH access

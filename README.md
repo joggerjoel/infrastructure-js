@@ -72,6 +72,7 @@ This directory contains comprehensive documentation for the Node.js/TypeScript s
 | Document | Purpose | Status |
 |----------|---------|--------|
 | **[Runbooks](runbooks/)** | Incident response procedures | 🚧 Partial |
+| **[Escalation Strategy](escalation-strategy.md)** | Multi-channel alerting (Logs, GUI, Email, SMS/WhatsApp) | 💡 Guidance |
 | **[Architecture Practices](architecture-practices.md)** | ADRs, SLOs, ownership, incident postmortems | 💡 Guidance |
 
 ---
