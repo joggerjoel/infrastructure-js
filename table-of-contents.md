@@ -6,6 +6,12 @@
 **Purpose**: Quick navigation prioritized by importance and urgency  
 ---
 
+## 📋 POC vs Production Context
+
+**⚠️ Important**: If you're building a **Proof-of-Concept**, see [POC Priorities](poc-priorities.md) for adjusted priorities. The priorities below are for **production-ready** systems.
+
+---
+
 ## 🔴 P0 - Critical (Read First - Production Blockers)
 
 These documents cover features that **must** be implemented before production launch:
@@ -64,6 +70,7 @@ Improves observability and developer experience:
 | **P2.1** | [Distributed Tracing](tracing.md) | Advanced debugging across services | 25 min |
 | **P2.2** | [Framework Guide](framework.md) | Comprehensive infrastructure overview | 30 min |
 | **P2.3** | [MVP Documentation Plan](plan.md) | Documentation strategy and priorities | 20 min |
+| **P2.4** | [POC Priorities](poc-priorities.md) | Priority adjustments for proof-of-concept projects | 15 min |
 
 **Action Items**:
 1. Implement OpenTelemetry for distributed tracing
