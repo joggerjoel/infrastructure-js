@@ -315,12 +315,163 @@ async function getErrorAnalytics(timeRange: string) {
 }
 ```
 
+### ⚠️ Elasticsearch for Historical Real-Time Data
+
+**Question**: Is Elasticsearch the right choice for historical real-time data?
+
+**Answer**: **Yes, with caveats** - Elasticsearch excels at this use case, but understand the trade-offs.
+
+#### ✅ Why Elasticsearch Works for Historical Real-Time Data
+
+1. **Near Real-Time Indexing**:
+   - Default refresh interval: 1 second
+   - Can be tuned to 100ms for critical data
+   - Data searchable within 1-2 seconds of ingestion
+
+2. **Time-Series Optimization**:
+   - Daily/weekly indices for efficient retention
+   - Hot/warm/cold tier architecture
+   - Automatic index lifecycle management
+
+3. **Search + Analytics**:
+   - Full-text search on recent data
+   - Aggregations on historical data
+   - Single query can span real-time and historical
+
+4. **Scalability**:
+   - Handles high ingestion rates (100k+ docs/sec)
+   - Horizontal scaling for both throughput and storage
+
+#### ⚠️ Trade-Offs and Limitations
+
+1. **Not Truly Real-Time**:
+   - **1-second indexing delay** (default)
+   - Can reduce to 100ms but impacts performance
+   - For sub-100ms requirements → Use Redis or in-memory cache
+
+2. **Cost at Scale**:
+   - Storage costs grow with retention period
+   - Need hot/warm/cold tiers for cost optimization
+   - Consider archiving to S3 for very old data
+
+3. **Complexity**:
+   - Index management (rollover, retention policies)
+   - Cluster management (sharding, replication)
+   - Query optimization for time-series data
+
+4. **Not a Database**:
+   - No ACID transactions
+   - Eventual consistency (within cluster)
+   - Not source of truth for critical data
+
+#### 🎯 When Elasticsearch is RIGHT for Historical Real-Time Data
+
+✅ **Good Fit**:
+- **Logs**: Real-time log ingestion + historical analysis
+- **Metrics**: Time-series metrics with search capability
+- **Events**: Event streams with search and aggregation needs
+- **Analytics**: Real-time dashboards + historical reporting
+- **Search**: Full-text search on both recent and historical data
+
+**Example Use Cases**:
+- Application logs (last 7 days hot, 90 days warm, archive older)
+- User activity events (real-time search + historical analysis)
+- Business metrics (real-time dashboards + trend analysis)
+- Security events (real-time detection + historical forensics)
+
+#### ❌ When to Consider Alternatives
+
+**For Truly Real-Time (< 100ms)**:
+- **Redis Streams**: Sub-millisecond latency
+- **Apache Kafka**: Real-time streaming with consumers
+- **In-Memory Cache**: For current state only
+
+**For Pure Time-Series**:
+- **InfluxDB**: Optimized for time-series metrics
+- **TimescaleDB**: PostgreSQL extension for time-series
+- **Prometheus**: Metrics-focused, not for general search
+
+**For Simple Historical Storage**:
+- **PostgreSQL**: If you don't need search/aggregations
+- **S3 + Athena**: Cost-effective for very large historical datasets
+
+#### 💡 Best Practices for Historical Real-Time Data
+
+**1. Index Strategy**:
+```yaml
+# Daily indices for efficient retention
+index_pattern: "events-%{+YYYY.MM.dd}"
+retention:
+  hot: 7 days      # Fast SSD, frequent queries
+  warm: 30 days    # Slower storage, occasional queries
+  cold: 90 days    # Very slow storage, rare queries
+  delete: 365 days # Archive to S3, delete from ES
+```
+
+**2. Refresh Interval Tuning**:
+```typescript
+// For real-time data (100ms refresh)
+await esClient.indices.putSettings({
+  index: 'events-realtime',
+  body: {
+    refresh_interval: '100ms'  // More frequent refresh
+  }
+});
+
+// For historical data (30s refresh)
+await esClient.indices.putSettings({
+  index: 'events-historical',
+  body: {
+    refresh_interval: '30s'  // Less frequent, better performance
+  }
+});
+```
+
+**3. Hybrid Architecture**:
+```
+Real-Time (< 1s):     Redis Streams → Application
+Near Real-Time (1-5s): Elasticsearch → Dashboards
+Historical (> 5s):    Elasticsearch → Analytics
+Very Old (> 90 days): S3 → Athena (query on demand)
+```
+
+**4. Cost Optimization**:
+- Use **index lifecycle management** (ILM) for automatic tiering
+- **Compress old indices** (reduce storage by 70-80%)
+- **Archive to S3** after retention period
+- **Separate clusters** for hot vs cold data
+
+#### 📊 Decision Framework
+
+| Requirement | Elasticsearch | Alternative |
+|-------------|---------------|-------------|
+| **Search on recent data** | ✅ Excellent | Redis (no search) |
+| **Search on historical data** | ✅ Excellent | PostgreSQL (slower) |
+| **Sub-second latency** | ⚠️ 1s delay | Redis Streams |
+| **Time-series aggregations** | ✅ Excellent | InfluxDB (better) |
+| **Full-text search** | ✅ Excellent | PostgreSQL (limited) |
+| **Cost at scale** | ⚠️ Expensive | S3 + Athena (cheaper) |
+| **ACID transactions** | ❌ No | PostgreSQL |
+
+**Verdict**: Elasticsearch is **excellent** for historical real-time data IF:
+- You need search capabilities
+- 1-second delay is acceptable
+- You have budget for storage
+- You need aggregations and analytics
+
+**Consider alternatives** if:
+- You need sub-100ms real-time
+- You only need simple time-series metrics
+- Cost is primary concern
+- You don't need search functionality
+
 ### ❌ When NOT to Use Elasticsearch
 
 - **Simple key-value lookups** → Use Redis
 - **ACID transactions** → Use PostgreSQL
 - **Low search volume** (< 1000 searches/day) → PostgreSQL full-text search might be enough
-- **Real-time data** → Elasticsearch has ~1s indexing delay
+- **Sub-100ms real-time requirements** → Use Redis Streams or Kafka
+- **Pure time-series metrics** (no search needed) → Consider InfluxDB or TimescaleDB
 
 ### Implementation Priority
 
