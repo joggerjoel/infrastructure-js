@@ -16,8 +16,9 @@
 4. [Kafka - Event Streaming & Event Sourcing](#kafka---event-streaming--event-sourcing)
 5. [RabbitMQ - Message Queue & Task Processing](#rabbitmq---message-queue--task-processing)
 6. [Decision Matrix](#decision-matrix)
-7. [Integration Patterns](#integration-patterns)
-8. [Implementation Roadmap](#implementation-roadmap)
+7. [Application/Service Selection Guide](#application-service-selection-guide)
+8. [Integration Patterns](#integration-patterns)
+9. [Implementation Roadmap](#implementation-roadmap)
 
 ---
 
@@ -758,7 +759,30 @@ channel.consume(replyQueue.queue, (msg) => {
 
 ## Decision Matrix
 
-### When to Use Each Technology
+### Application/Service Type Matrix
+
+Choose the best technology based on your application/service characteristics:
+
+| Application/Service Type | Primary Technology | Secondary Options | Why |
+|-------------------------|-------------------|-------------------|-----|
+| **User-Facing Web App** | Redis (cache) + PostgreSQL (data) | Elasticsearch (if search needed) | Fast responses, ACID transactions |
+| **API Gateway** | Redis (rate limiting, caching) | - | Sub-millisecond latency required |
+| **Authentication Service** | Redis (sessions) + PostgreSQL (users) | - | Fast session lookups, persistent user data |
+| **Search Service** | Elasticsearch | PostgreSQL (if simple) | Full-text search, relevance scoring |
+| **Log Aggregation Service** | Elasticsearch | Kafka (if high volume) | Search + analytics on logs |
+| **Analytics Service** | Elasticsearch | PostgreSQL (if simple) | Aggregations, time-series analysis |
+| **Real-Time Dashboard** | Redis (current state) + Elasticsearch (historical) | Kafka (streaming) | <100ms for current, search for historical |
+| **Event Processing Service** | Kafka | RabbitMQ (if low volume) | High throughput, multiple consumers |
+| **Background Job Service** | Redis (Bull) | RabbitMQ (if critical) | Simple queues, high throughput |
+| **Notification Service** | RabbitMQ | Redis (Bull) | Guaranteed delivery for critical alerts |
+| **Data Pipeline Service** | Kafka | RabbitMQ (if simple) | High-volume data transformation |
+| **Audit/Compliance Service** | Kafka + Elasticsearch | PostgreSQL (if simple) | Event sourcing + searchable audit trail |
+| **Metrics Collection Service** | Elasticsearch | InfluxDB (if metrics-only) | Time-series + search capability |
+| **Session Management** | Redis | PostgreSQL (if needed) | Fast lookups, TTL support |
+| **Rate Limiting Service** | Redis | - | Atomic counters, TTL |
+| **Feature Flag Service** | Redis | PostgreSQL (config) | Fast reads, distributed cache |
+
+### Use Case Matrix
 
 | Use Case | Redis | Elasticsearch | Kafka | RabbitMQ |
 |----------|-------|---------------|-------|----------|
@@ -773,6 +797,8 @@ channel.consume(replyQueue.queue, (msg) => {
 | **Event sourcing** | ❌ | ⚠️ Can store | ✅ Primary | ⚠️ Possible but not ideal |
 | **Microservices async comm** | ⚠️ Pub/sub only | ❌ | ✅ Primary | ⚠️ Possible |
 | **Analytics/aggregations** | ❌ | ✅ Primary | ⚠️ Can stream to ES | ❌ |
+| **Historical real-time data** | ❌ | ✅ Primary | ⚠️ Can stream to ES | ❌ |
+| **Sub-100ms real-time** | ✅ Primary | ❌ | ⚠️ Possible | ❌ |
 
 ### Technology Overlap
 
