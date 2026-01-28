@@ -6,9 +6,15 @@
 **Purpose**: Quick navigation prioritized by importance and urgency  
 ---
 
-## 📋 POC vs Production Context
+## 📋 Lifecycle Stages
 
-**⚠️ Important**: If you're building a **Proof-of-Concept**, see [POC Priorities](poc-priorities.md) for adjusted priorities. The priorities below are for **production-ready** systems.
+**⚠️ Important**: Understand your current stage! See [Lifecycle Stages](lifecycle-stages.md) for complete journey from POC → MVP → Production → Scale. Each stage has different priorities and requirements.
+
+**Quick Reference**:
+- **POC**: [POC Priorities](poc-priorities.md) - Proof of concept priorities
+- **MVP**: [MVP Documentation Plan](plan.md) - Minimum viable product priorities
+- **Production**: Priorities below - Production-ready priorities
+- **Scale**: Advanced features - Scaled production priorities
 
 ---
 
@@ -70,7 +76,8 @@ Improves observability and developer experience:
 | **P2.1** | [Distributed Tracing](tracing.md) | Advanced debugging across services | 25 min |
 | **P2.2** | [Framework Guide](framework.md) | Comprehensive infrastructure overview | 30 min |
 | **P2.3** | [MVP Documentation Plan](plan.md) | Documentation strategy and priorities | 20 min |
-| **P2.4** | [POC Priorities](poc-priorities.md) | Priority adjustments for proof-of-concept projects | 15 min |
+| **P2.4** | [Lifecycle Stages](lifecycle-stages.md) | Complete journey from POC to production-grade | 30 min |
+| **P2.5** | [POC Priorities](poc-priorities.md) | Priority adjustments for proof-of-concept projects | 15 min |
 
 **Action Items**:
 1. Implement OpenTelemetry for distributed tracing

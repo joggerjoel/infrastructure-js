@@ -54,6 +54,7 @@ This directory contains comprehensive documentation for the Node.js/TypeScript s
 | Document | Purpose | Status |
 |----------|---------|--------|
 | **[Implementation Status](implementation-status.md)** | What's actually implemented vs documented | ✅ Current |
+| **[Lifecycle Stages](lifecycle-stages.md)** | Complete journey from POC to production-grade | 💡 Guidance |
 | **[POC Priorities](poc-priorities.md)** | Priority adjustments for proof-of-concept projects | 💡 Guidance |
 | **[DevOps Overview](devops.md)** | Central index for all DevOps documentation | ✅ Current |
 | **[Integration Guide](integration-guide.md)** | How infrastructure components work together | ✅ Current |
