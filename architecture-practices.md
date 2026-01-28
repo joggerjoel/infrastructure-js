@@ -500,7 +500,7 @@ sli_definitions:
     window: "5 minutes"
     
   freshness:
-    description: "Data freshness for scraper"
+    description: "Data freshness for processor"
     measurement: "time_since_last_successful_scrape"
     window: "1 hour"
     
@@ -526,7 +526,7 @@ slo_definitions:
     window: "30 days"
     error_budget: 0.1%
     
-  scraper_freshness:
+  processor_freshness:
     sli: freshness
     target: "max_age < 24 hours"
     window: "7 days"
@@ -1974,7 +1974,7 @@ documentation_ownership:
 - **Definition**: Match confidence score for entity matching (low, medium, high, very_high)
 - **Context**: `reviews.match_confidence`
 - **Synonyms**: Match Score
-- **Related**: Reconciliation, Match Status
+- **Related**: Entity Matching, Match Status
 
 ### Review
 - **Definition**: Human review of entity match

@@ -170,7 +170,7 @@ This framework identifies all critical topics required to create and maintain hi
 - **Data validation**: Business rule enforcement
 - **Referential integrity**: Foreign key constraints
 - **Idempotency**: Safe retry mechanisms
-- **Data reconciliation**: Detecting and fixing inconsistencies
+- **Data consistency**: Detecting and fixing inconsistencies
 
 ### 5.4 Data Migration
 - **Migration strategy**: Big bang vs phased approach
