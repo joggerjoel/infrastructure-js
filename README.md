@@ -88,6 +88,7 @@ This directory contains comprehensive documentation for the Node.js/TypeScript s
 | **[Roles & Access](roles-and-access.md)** | User, Developer, DevOps role definitions and permissions | 💡 Guidance |
 | **[Runbooks](runbooks/)** | Incident response procedures | 🚧 Partial |
 | **[Escalation Strategy](escalation-strategy.md)** | Multi-channel alerting (Logs, GUI, Email, SMS/WhatsApp) | 💡 Guidance |
+| **[Spam Detection Strategy](spam-detection-strategy.md)** | Template hashing, duplicate detection, Redis-based spam prevention | 💡 Guidance |
 | **[Architecture Practices](architecture-practices.md)** | ADRs, SLOs, ownership, incident postmortems | 💡 Guidance |
 
 ---

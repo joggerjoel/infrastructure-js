@@ -295,6 +295,7 @@ If starting from scratch, implement in this order:
 | **Query Optimization** | [Database Layer](database-layer.md) |
 | **Rate Limiting** | [Security](security.md) |
 | **Redis** | [Intelligent Caching](intelligent-caching.md) |
+| **Spam Detection** | [Spam Detection Strategy](spam-detection-strategy.md) |
 | **Rollback** | [Runbooks](runbooks/), [CI/CD](cicd.md) |
 | **Scaling** | [Performance & Scalability](performance-scalability.md) |
 | **Security** | [Security](security.md) |
