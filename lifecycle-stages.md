@@ -10,13 +10,14 @@
 ## Table of Contents
 
 1. [Overview](#overview)
-2. [Stage 1: Proof of Concept (POC)](#stage-1-proof-of-concept-poc)
-3. [Stage 2: Minimum Viable Product (MVP)](#stage-2-minimum-viable-product-mvp)
-4. [Stage 3: Production-Ready](#stage-3-production-ready)
-5. [Stage 4: Scaled Production](#stage-4-scaled-production)
-6. [Stage Comparison Matrix](#stage-comparison-matrix)
-7. [Migration Checklists](#migration-checklists)
-8. [Decision Framework](#decision-framework)
+2. [Integration Checkpoints & Preventing Drift](#integration-checkpoints--preventing-drift)
+3. [Stage 1: Proof of Concept (POC)](#stage-1-proof-of-concept-poc)
+4. [Stage 2: Minimum Viable Product (MVP)](#stage-2-minimum-viable-product-mvp)
+5. [Stage 3: Production-Ready](#stage-3-production-ready)
+6. [Stage 4: Scaled Production](#stage-4-scaled-production)
+7. [Stage Comparison Matrix](#stage-comparison-matrix)
+8. [Migration Checklists](#migration-checklists)
+9. [Decision Framework](#decision-framework)
 
 ---
 
@@ -31,7 +32,18 @@ POC → MVP → Production → Scale
  │      │        └─ Reliability, security, monitoring
  │      └─ Stability, basic operations
  └─ Core functionality, quick iteration
+
+⚠️ CRITICAL: Fast iteration is the goal, but once a stage reaches maturity,
+   you MUST integrate into main infrastructure to prevent drift and maintainability issues.
 ```
+
+### Core Principles
+
+1. **Fast Iteration**: Move quickly from POC → Production, don't over-engineer
+2. **Integration Checkpoints**: At each stage maturity, integrate into main infrastructure
+3. **Prevent Drift**: Don't let experimental code diverge from production standards
+4. **Maintainability**: Keep infrastructure consistent and maintainable
+5. **Time-Boxed Stages**: Each stage has a maximum duration before integration required
 
 ### Stage Characteristics
 
@@ -41,6 +53,139 @@ POC → MVP → Production → Scale
 | **MVP** | 1-3 months | Stable demo, early users | 10-100 | Basic reliability | 2-5 devs |
 | **Production** | Ongoing | Reliable service | 100-10k | Full operations | 5-15 devs |
 | **Scale** | Ongoing | High performance | 10k+ | Advanced optimization | 15+ devs |
+
+---
+
+## Integration Checkpoints & Preventing Drift
+
+### The Problem: Infrastructure Drift
+
+**What happens without integration checkpoints**:
+- ❌ Experimental code diverges from production standards
+- ❌ Different patterns emerge in different stages
+- ❌ Technical debt accumulates
+- ❌ Code becomes unmaintainable
+- ❌ Team confusion about "which way is correct"
+- ❌ Refactoring becomes exponentially harder
+
+### The Solution: Mandatory Integration Checkpoints
+
+**At each stage maturity, you MUST**:
+1. ✅ **Integrate into main infrastructure** - Merge patterns, standards, and code
+2. ✅ **Standardize approaches** - Use same patterns across all stages
+3. ✅ **Update documentation** - Ensure docs reflect integrated state
+4. ✅ **Train team** - Ensure everyone knows the integrated approach
+5. ✅ **Remove divergence** - Delete or refactor experimental code
+
+### Integration Checkpoint Requirements
+
+#### POC → Integration Checkpoint (After 2-4 weeks)
+
+**When**: POC is validated or invalidated
+
+**Must Do**:
+- [ ] Extract reusable patterns from POC
+- [ ] Integrate core functionality into main codebase
+- [ ] Standardize on POC-proven approaches
+- [ ] Remove POC-specific hacks/workarounds
+- [ ] Update main infrastructure documentation
+- [ ] Ensure POC code follows main infrastructure patterns
+
+**If POC is invalidated**:
+- [ ] Document learnings
+- [ ] Archive POC code (don't delete, but mark as archived)
+- [ ] Update main infrastructure with lessons learned
+
+#### MVP → Integration Checkpoint (After 1-3 months)
+
+**When**: MVP is stable and handling users
+
+**Must Do**:
+- [ ] Merge MVP infrastructure into production standards
+- [ ] Standardize on MVP-proven reliability patterns
+- [ ] Integrate monitoring, security, and operations patterns
+- [ ] Remove MVP-specific shortcuts
+- [ ] Update all documentation to reflect integrated state
+- [ ] Ensure MVP follows same patterns as production
+
+**Critical**: MVP cannot remain separate from production infrastructure longer than 3 months
+
+#### Production → Integration Checkpoint (Ongoing)
+
+**When**: New features or patterns are added to production
+
+**Must Do**:
+- [ ] Ensure all production code follows same patterns
+- [ ] Standardize on proven approaches
+- [ ] Remove deprecated patterns
+- [ ] Keep documentation up-to-date
+- [ ] Regular infrastructure audits
+
+### Time-Boxed Stages
+
+**Maximum Duration Before Integration Required**:
+
+| Stage | Max Duration | Integration Required |
+|-------|--------------|---------------------|
+| **POC** | 4 weeks | Extract patterns, integrate core |
+| **MVP** | 3 months | Merge into production infrastructure |
+| **Production** | Ongoing | Continuous integration and standardization |
+
+**⚠️ Warning**: If you exceed these durations without integration, you risk:
+- Large infrastructure drift
+- Unmaintainable codebase
+- Team confusion
+- Technical debt explosion
+
+### Fast Iteration with Integration
+
+**The Goal**: Move quickly from POC → Production while maintaining infrastructure consistency
+
+**How**:
+1. **Start Fast**: POC can be experimental, quick hacks OK
+2. **Extract Early**: Once concept proven, extract patterns immediately
+3. **Integrate Soon**: Don't wait for "perfect" - integrate when stage matures
+4. **Standardize Always**: Once integrated, standardize across all code
+5. **Document Continuously**: Keep docs updated as you integrate
+
+### Integration Checklist Template
+
+**For each stage transition**:
+
+```markdown
+## Integration Checklist: [Stage] → [Next Stage]
+
+### Code Integration
+- [ ] Extract reusable patterns from [Stage]
+- [ ] Merge into main codebase following production standards
+- [ ] Remove stage-specific hacks/workarounds
+- [ ] Ensure code follows main infrastructure patterns
+- [ ] Code review by infrastructure team
+
+### Infrastructure Integration
+- [ ] Standardize on [Stage]-proven approaches
+- [ ] Update infrastructure patterns documentation
+- [ ] Ensure all environments use same patterns
+- [ ] Remove stage-specific infrastructure
+
+### Documentation Integration
+- [ ] Update main documentation with integrated patterns
+- [ ] Remove stage-specific documentation (or archive)
+- [ ] Update implementation status
+- [ ] Update runbooks if needed
+
+### Team Integration
+- [ ] Train team on integrated approach
+- [ ] Update onboarding documentation
+- [ ] Ensure all team members know integrated patterns
+- [ ] Remove confusion about "which way is correct"
+
+### Validation
+- [ ] All code follows same patterns
+- [ ] Documentation is consistent
+- [ ] Team understands integrated approach
+- [ ] No drift between stages
+```
 
 ---
 
@@ -128,6 +273,24 @@ POC → MVP → Production → Scale
 - ✅ Stakeholder approval
 - ✅ Ready to build for real users
 - ✅ Team committed to next stage
+
+### Integration Checkpoint (Required After 2-4 Weeks)
+
+**⚠️ CRITICAL**: Once POC is validated or invalidated, you MUST integrate:
+
+**If Validated**:
+- [ ] Extract core functionality patterns
+- [ ] Integrate into main codebase following production standards
+- [ ] Remove POC-specific hacks
+- [ ] Standardize on POC-proven approaches
+- [ ] Update main infrastructure documentation
+
+**If Invalidated**:
+- [ ] Document learnings
+- [ ] Archive POC code (mark as archived, don't delete)
+- [ ] Update main infrastructure with lessons learned
+
+**Time Limit**: Maximum 4 weeks before integration required
 
 ---
 
@@ -230,6 +393,26 @@ POC → MVP → Production → Scale
 - ✅ Can handle real user load
 - ✅ Basic operations working
 - ✅ Ready for broader launch
+
+### Integration Checkpoint (Required After 1-3 Months)
+
+**⚠️ CRITICAL**: MVP cannot remain separate from production infrastructure longer than 3 months
+
+**Must Do**:
+- [ ] Merge MVP infrastructure patterns into production standards
+- [ ] Standardize on MVP-proven reliability patterns (graceful shutdown, error handling)
+- [ ] Integrate monitoring, security, and operations patterns
+- [ ] Remove MVP-specific shortcuts and workarounds
+- [ ] Update all documentation to reflect integrated state
+- [ ] Ensure MVP follows same patterns as production
+
+**Time Limit**: Maximum 3 months before integration required
+
+**Risk if Exceeded**:
+- Large infrastructure drift
+- Unmaintainable codebase
+- Team confusion about "which way is correct"
+- Technical debt explosion
 
 ---
 
@@ -339,6 +522,23 @@ POC → MVP → Production → Scale
 - ✅ Can handle production load
 - ✅ Comprehensive operations
 - ✅ Ready for growth
+
+### Integration Checkpoint (Ongoing)
+
+**⚠️ CRITICAL**: Production infrastructure must be continuously integrated and standardized
+
+**Ongoing Requirements**:
+- [ ] All production code follows same patterns
+- [ ] Standardize on proven approaches (no "special cases")
+- [ ] Remove deprecated patterns regularly
+- [ ] Keep documentation up-to-date
+- [ ] Regular infrastructure audits (quarterly)
+- [ ] Ensure no drift between different parts of production
+
+**Continuous Integration**:
+- New features must follow production standards
+- No "experimental" code in production
+- All patterns documented and standardized
 
 ---
 
@@ -507,7 +707,10 @@ POC → MVP → Production → Scale
 - [ ] Create staging environment
 - [ ] Basic CI/CD pipeline
 
-**Week 4: Documentation**
+**Week 4: Integration & Documentation**
+- [ ] **INTEGRATION CHECKPOINT**: Extract POC patterns, integrate into main codebase
+- [ ] Standardize on POC-proven approaches
+- [ ] Remove POC-specific hacks
 - [ ] Update implementation status
 - [ ] Create basic runbooks
 - [ ] Document deployment process
@@ -518,6 +721,8 @@ POC → MVP → Production → Scale
 - [ ] Can handle 10-100 users
 - [ ] Basic monitoring working
 - [ ] Can deploy without downtime
+- [ ] **POC patterns integrated into main infrastructure**
+- [ ] **No drift between POC and MVP code**
 
 ---
 
@@ -537,7 +742,11 @@ POC → MVP → Production → Scale
 - [ ] Set up incident response procedures
 - [ ] Add log aggregation (Elasticsearch)
 
-**Month 3: Performance & Polish**
+**Month 3: Integration & Performance**
+- [ ] **INTEGRATION CHECKPOINT**: Merge MVP infrastructure into production standards
+- [ ] Standardize on MVP-proven reliability patterns
+- [ ] Remove MVP-specific shortcuts
+- [ ] Ensure all code follows production patterns
 - [ ] Performance optimization
 - [ ] Database connection pooling
 - [ ] API rate limiting
@@ -550,6 +759,8 @@ POC → MVP → Production → Scale
 - [ ] Comprehensive monitoring
 - [ ] Security audit passed
 - [ ] Runbooks tested
+- [ ] **MVP infrastructure integrated into production**
+- [ ] **No drift between MVP and Production code**
 
 ---
 
@@ -623,6 +834,21 @@ POC → MVP → Production → Scale
 - **Production**: If it improves reliability or security
 - **Scale**: If it improves performance or availability
 
+### When Must I Integrate?
+
+**Mandatory Integration Triggers**:
+1. **Time Limit Exceeded**: POC > 4 weeks, MVP > 3 months
+2. **Stage Maturity Reached**: Stage goals met, ready for next stage
+3. **Pattern Proven**: Approach works, should be standardized
+4. **Drift Detected**: Code diverging from standards
+
+**⚠️ Warning**: If you exceed time limits without integration, you risk:
+- Large infrastructure drift
+- Unmaintainable codebase
+- Team confusion
+- Technical debt explosion
+- Refactoring becomes exponentially harder
+
 ---
 
 ## Stage-Specific Priorities
@@ -667,11 +893,16 @@ Scale (Ongoing)
 
 ### Key Principles
 
-1. **Start Simple**: POC needs minimal infrastructure
-2. **Add Gradually**: Each stage adds what's needed
-3. **Don't Skip Stages**: Each builds on the previous
-4. **Validate Before Moving**: Ensure stage goals met
-5. **Focus on Current Stage**: Don't optimize prematurely
+1. **Fast Iteration**: Move quickly from POC → Production, don't over-engineer
+2. **Integration Checkpoints**: At each stage maturity, integrate into main infrastructure
+3. **Prevent Drift**: Don't let experimental code diverge from production standards
+4. **Time-Boxed Stages**: Maximum duration before integration required (POC: 4 weeks, MVP: 3 months)
+5. **Maintainability**: Keep infrastructure consistent and maintainable
+6. **Start Simple**: POC needs minimal infrastructure
+7. **Add Gradually**: Each stage adds what's needed
+8. **Don't Skip Stages**: Each builds on the previous
+9. **Validate Before Moving**: Ensure stage goals met
+10. **Focus on Current Stage**: Don't optimize prematurely
 
 ### Documentation by Stage
 
