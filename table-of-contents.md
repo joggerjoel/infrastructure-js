@@ -56,7 +56,10 @@ Essential for operational excellence and team productivity:
 | **P1.6** | [CI/CD Pipelines](cicd.md) | Automated deployment workflows | 25 min |
 | **P1.7** | [Program Versioning](program-versioning.md) | Release management | 20 min |
 | **P1.8** | [API Documentation](api-documentation.md) | Frontend/integration needs | 25 min |
-| **P1.9** | [JavaScript OOP Best Practices](javascript-oop-best-practices.md) | Proper OOP patterns, TypeScript, SOLID principles | 30 min |
+| **P1.9** | [Escalation Strategy](escalation-strategy.md) | Multi-channel alerting (Logs, GUI, Email, SMS/WhatsApp) | 20 min |
+| **P1.10** | [Roles & Access](roles-and-access.md) | User, Developer, DevOps role definitions and permissions | 20 min |
+| **P1.11** | [Messaging & Search Strategy](messaging-and-search-strategy.md) | Where to use Elasticsearch, Redis, Kafka, RabbitMQ | 30 min |
+| **P1.12** | [JavaScript OOP Best Practices](javascript-oop-best-practices.md) | Proper OOP patterns, TypeScript, SOLID principles | 30 min |
 
 **Action Items**:
 1. Set up Prometheus metrics endpoint
@@ -64,6 +67,9 @@ Essential for operational excellence and team productivity:
 3. Implement semantic versioning workflow
 4. Choose and implement API documentation approach
 5. Create Grafana dashboards for key metrics
+6. Set up escalation strategy (logs, GUI, email, SMS)
+7. Define roles and access control
+8. Choose messaging/search infrastructure (Redis, Elasticsearch, Kafka, RabbitMQ)
 
 ---
 
@@ -78,11 +84,14 @@ Improves observability and developer experience:
 | **P2.3** | [MVP Documentation Plan](plan.md) | Documentation strategy and priorities | 20 min |
 | **P2.4** | [Lifecycle Stages](lifecycle-stages.md) | Complete journey from POC to production-grade | 30 min |
 | **P2.5** | [POC Priorities](poc-priorities.md) | Priority adjustments for proof-of-concept projects | 15 min |
+| **P2.6** | [Spam Detection Strategy](spam-detection-strategy.md) | Template hashing, duplicate detection, Redis-based spam prevention | 25 min |
 
 **Action Items**:
 1. Implement OpenTelemetry for distributed tracing
 2. Review framework guide for missing infrastructure components
 3. Follow MVP documentation plan for creating new docs
+4. Review lifecycle stages to understand current maturity level
+5. Implement spam detection if handling user input
 
 ---
 
@@ -163,10 +172,12 @@ Improves observability and developer experience:
 **Running the system**:
 1. [DevOps Overview](devops.md) - Central operations index
 2. [Runbooks](runbooks/) - Incident response procedures
-3. [Graceful Shutdown](graceful-shutdown.md) - Clean restarts
-4. [Implementation Status](implementation-status.md) - What's actually running
+3. [Escalation Strategy](escalation-strategy.md) - Multi-channel alerting
+4. [Roles & Access](roles-and-access.md) - Role definitions and permissions
+5. [Graceful Shutdown](graceful-shutdown.md) - Clean restarts
+6. [Implementation Status](implementation-status.md) - What's actually running
 
-**For incidents**: Runbooks → Prometheus → Logging → Integration Guide
+**For incidents**: Runbooks → Escalation Strategy → Prometheus → Logging → Integration Guide
 
 ---
 
@@ -175,7 +186,9 @@ Improves observability and developer experience:
 1. [Framework Guide](framework.md) - Infrastructure framework overview
 2. [API Documentation](api-documentation.md) - OpenAPI/Swagger
 3. [MVP Documentation Plan](plan.md) - Documentation strategy
-4. [README](README.md) - Documentation index
+4. [Lifecycle Stages](lifecycle-stages.md) - POC to production journey
+5. [POC Priorities](poc-priorities.md) - POC-focused priorities
+6. [README](README.md) - Documentation index
 
 ---
 
@@ -308,8 +321,15 @@ If starting from scratch, implement in this order:
 | **Production** | [Implementation Status](implementation-status.md), [DevOps](devops.md) |
 | **Query Optimization** | [Database Layer](database-layer.md) |
 | **Rate Limiting** | [Security](security.md) |
-| **Redis** | [Intelligent Caching](intelligent-caching.md) |
+| **Redis** | [Intelligent Caching](intelligent-caching.md), [Messaging & Search Strategy](messaging-and-search-strategy.md) |
+| **Roles** | [Roles & Access](roles-and-access.md) |
 | **Spam Detection** | [Spam Detection Strategy](spam-detection-strategy.md) |
+| **Escalation** | [Escalation Strategy](escalation-strategy.md) |
+| **Elasticsearch** | [Messaging & Search Strategy](messaging-and-search-strategy.md) |
+| **Kafka** | [Messaging & Search Strategy](messaging-and-search-strategy.md) |
+| **RabbitMQ** | [Messaging & Search Strategy](messaging-and-search-strategy.md) |
+| **Lifecycle** | [Lifecycle Stages](lifecycle-stages.md) |
+| **POC** | [POC Priorities](poc-priorities.md), [Lifecycle Stages](lifecycle-stages.md) |
 | **Rollback** | [Runbooks](runbooks/), [CI/CD](cicd.md) |
 | **Scaling** | [Performance & Scalability](performance-scalability.md) |
 | **Security** | [Security](security.md) |
