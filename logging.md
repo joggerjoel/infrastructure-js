@@ -4,11 +4,11 @@
 **Status**: ✅ **IMPLEMENTED** - Pino-based structured logging with file rotation  
 **Priority**: 🔴 **P0.7** - Critical for debugging production issues  
 **Last Updated**: 2026-01-28  
-**Owned By**: Backend Team  
+**Owned By**: Infrastructure Team  
 
 ---
 
-The backend uses [Pino](https://getpino.io/) for structured logging with file rotation and compression.
+Services use [Pino](https://getpino.io/) for structured logging with file rotation and compression.
 
 **In this project ({app_name}):** Logging is implemented in **`logger.js`** at the project root. Services use `const { log, warn, error } = require('./logger')`. Log files use the **`{app_name}-YYYYMMDD_HHMMSS`** prefix (e.g. `{app_name}-20260127_191934.log`) under `logs/YYYY/YYYYMM/YYYYMMDD/`. Set `LOG_DIR`, `LOG_LEVEL`, and `NODE_ENV` in `.env` as below.
 
@@ -179,7 +179,7 @@ Every log line is a JSON object. Attributes come from Pino plus the object passe
 | `startupTimestamp`| string | Logger init | `YYYYMMDD_HHMMSS` for this process |
 | `logDir`          | string | Logger init | Absolute path to log root |
 | `dateDir`         | string | Logger init | `logs/YYYY/YYYYMM/YYYYMMDD` for today |
-| `baseLogFile`     | string | Logger init | Full path to `backend-YYYYMMDD_HHMMSS.log` |
+| `baseLogFile`     | string | Logger init | Full path to `{app_name}-YYYYMMDD_HHMMSS.log` |
 | `rotationPolicy`  | string | Logger init | `"size-based only (20MB limit, no daily rotation)"` |
 | `logLevel`        | string | Logger init | Effective level (e.g. `debug`, `info`) |
 | `isDevelopment`   | bool   | Logger init | From `NODE_ENV !== 'production'` |
@@ -190,27 +190,27 @@ Every log line is a JSON object. Attributes come from Pino plus the object passe
 
 | Attribute           | Type    | When | Description |
 |--------------------|---------|------|-------------|
-| `requestHash`      | string  | getRecords, getSummary, history | Hash used to correlate frontend request with backend; from `X-Request-Id` or generated |
-| `xRequestId`       | string? | getRecords debug | `req.headers['x-request-id']` |
-| `XRequestId`       | string? | getRecords debug | `req.headers['X-Request-Id']` |
-| `allHeaders`       | string[]| getRecords debug | Header names containing `"request"` |
-| `trackerExists`    | boolean | getRecords debug | Whether `getQueryTracker(req)` returned a tracker |
-| `trackerQueryCount`| number  | getRecords debug | Number of queries tracked so far for this request |
-| `reqHasTracker`    | boolean | getRecords debug | Whether `req._queryTracker` exists |
-| `hasReq`           | boolean | getRecords debug | Request object passed to query |
-| `countSqlPreview`  | string  | getRecords debug | First ~100 chars of count SQL |
-| `countResult`      | string  | getRecords debug | `'array'` or `'not array'` |
+| `requestHash`      | string  | API requests | Hash used to correlate frontend request with service; from `X-Request-Id` or generated |
+| `xRequestId`       | string? | Request debug | `req.headers['x-request-id']` |
+| `XRequestId`       | string? | Request debug | `req.headers['X-Request-Id']` |
+| `allHeaders`       | string[]| Request debug | Header names containing `"request"` |
+| `trackerExists`    | boolean | Request debug | Whether `getQueryTracker(req)` returned a tracker |
+| `trackerQueryCount`| number  | Request debug | Number of queries tracked so far for this request |
+| `reqHasTracker`    | boolean | Request debug | Whether `req._queryTracker` exists |
+| `hasReq`           | boolean | Request debug | Request object passed to query |
+| `countSqlPreview`  | string  | Request debug | First ~100 chars of count SQL |
+| `countResult`      | string  | Request debug | `'array'` or `'not array'` |
 | `sqlPreview`       | string  | DB query tracking | First portion of executed SQL |
 | `paramCount`       | number  | DB query tracking, buildQuery | Number of bound parameters |
 | `duration`         | number  | DB query tracking | Query duration (ms) |
 | `rowCount`         | number  | DB query tracking | Rows returned |
 | `params`           | any[]   | buildQuery debug | Query parameters (may be truncated) |
-| `placeholders`     | number  | getSummary debug | Number of `?` in SQL |
-| `endpoint`         | string  | getRecords history | e.g. `/api/reconciliation/records?...` |
-| `queries`          | array   | getRecords history | Tracked query objects (sql, params, duration, etc.) |
-| `queryCount`       | number  | getRecords | Number of tracked queries for this request |
-| `rawQueriesCount`  | number  | getRecords debug | Length of `tracker.getQueries()` |
-| `rawQueries`       | array   | getRecords debug | Serialized tracked queries |
+| `placeholders`     | number  | Query debug | Number of `?` in SQL |
+| `endpoint`         | string  | Request history | e.g. `/api/entities/records?...` |
+| `queries`          | array   | Request history | Tracked query objects (sql, params, duration, etc.) |
+| `queryCount`       | number  | API requests | Number of tracked queries for this request |
+| `rawQueriesCount`  | number  | Request debug | Length of `tracker.getQueries()` |
+| `rawQueries`       | array   | Request debug | Serialized tracked queries |
 
 ### Error and operational attributes
 
@@ -219,16 +219,16 @@ Every log line is a JSON object. Attributes come from Pino plus the object passe
 | `err`      | object | error/warn | Error object (message, stack, etc.) |
 | `url`      | string | error | `req.originalUrl` |
 | `query`    | object | error | `req.query` |
-| `recordId` | number | bulk-review warn | Record id that failed |
-| `review_status` | string | bulk-review warn | Status for failed update |
-| `crosswalkIdsToRemove` | array | error | IDs that could not be removed |
-| `jobId`    | string | crosswalk error/info | Approve-to-crosswalk job id |
+| `entityId` | number | Operations warn | Entity id that failed |
+| `status`   | string | Operations warn | Status for failed update |
+| `idsToRemove` | array | error | IDs that could not be removed |
+| `jobId`    | string | Background jobs error/info | Background job id |
 | `compressedCount` | number | info | Number of log files compressed on startup |
 
 ### Feature summary
 
 - **Structured JSON**: Every log line is a JSON object; search and filter by any attribute.
-- **Request correlation**: Use `requestHash` or `X-Request-Id` to tie frontend requests to backend logs and query history.
+- **Request correlation**: Use `requestHash` or `X-Request-Id` to tie frontend requests to service logs and query history.
 - **Query debugging**: Use `trackerQueryCount`, `sqlPreview`, `paramCount`, `duration`, `rowCount` and the sequence of request messages to debug SQL and tracking.
 - **Viewing logs**: Use the web log viewer, API, or command-line tools.
 
