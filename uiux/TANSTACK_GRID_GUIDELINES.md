@@ -1,6 +1,6 @@
 ## TanStack Grid Guidelines – Performance & Best Practices
 
-This document provides guidelines for building performant TanStack grids. It documents lessons learned from the Artist Cleanup grid freeze and establishes patterns that all grids must follow.
+This document provides guidelines for building performant TanStack grids. It documents lessons learned from real-world performance issues and establishes patterns that all grids must follow.
 
 **Related Documentation**:
 - **[TANSTACK_GRID_SPEC.md](../specs/TANSTACK_GRID_SPEC.md)** — Complete schema-driven architecture specification
@@ -32,13 +32,15 @@ If you **must** build a custom grid (rare), follow the rules below.
 
 ---
 
-### What went wrong (Artist Cleanup case study)
+### Common Performance Issues
 
-- The `ArtistCleanup` page used **TanStack React Table** with a dynamically built `columns` array and `data` from React Query.
-- `columns` and `data` were **recreated on every render**, so React Table recalculated internal models more than necessary.
-- When filters changed (e.g. `review_type = reviewed`), React Query kicked off a new fetch and the grid tried to process a large result set, which combined with the non-memoized config caused the tab to appear **frozen**.
+**Problem:** Grids can appear frozen or unresponsive when:
+- `columns` and `data` arrays are recreated on every render
+- React Table recalculates internal models unnecessarily
+- Large result sets are processed without proper memoization
+- Filters trigger new fetches while non-memoized config causes recalculation
 
-The fix was to **memoize** the heavy inputs (`columns`, `data`) and tighten up loading/error handling.
+**Solution:** Always memoize heavy inputs (`columns`, `data`) and implement proper loading/error handling.
 
 ### Rules for all data grids
 
@@ -101,14 +103,13 @@ Avoid passing `queryData?.data || []` inline into `useReactTable` – that creat
 
 ```ts
 const [filters, setFilters] = useState<Filters>({
-  match_type: 'all',
-  review_type: 'not_reviewed',
-  disable_type: 'all',
+  status: 'all',
+  category: 'active',
   search: '',
 });
 
 const query = useQuery({
-  queryKey: ['artistCleanup', pageIndex, pageSize, filters],
+  queryKey: ['myGrid', pageIndex, pageSize, filters],
   queryFn: ({ signal }) => service.getGridData(/* … */, filters, [], signal),
   retry: false,
   keepPreviousData: false,
@@ -179,13 +180,13 @@ When building new grid pages:
 - Log **one line** when the query runs:
 
 ```ts
-console.log('[ArtistCleanup] Fetching', { pageIndex, pageSize, filters });
+console.log('[MyGrid] Fetching', { pageIndex, pageSize, filters });
 ```
 
 - Optionally log **row counts** on render:
 
 ```ts
-console.log('[ArtistCleanup] Rendering table', {
+console.log('[MyGrid] Rendering table', {
   rowCount: table.getRowModel().rows.length,
   total: data?.total,
 });
